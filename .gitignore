@@ -65,7 +65,3 @@ docker-compose.override.yml
 # ملفات خاصة بالاختبارات (لو تستخدم Jest أو غيره)
 jest.config.js
 
-# مجلدات node_modules داخل كل مجلد (تكرار للتأكيد)
-backend/node_modules/
-frontend/node_modules/
-dashboard/node_modules/
