@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.swiper-slide::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #0000006a;
+}
+
+.btn-fx {
+  position: relative;
+  overflow: hidden;
+}
+.btn-fx::after {
+  content: "";
+  position: absolute;
+  top: -175px;
+  left: -50%;
+  filter: blur(30px);
+  rotate: 50deg;
+  width: 10%;
+  height: 550%;
+  background-color: rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  opacity: 1;
+}
+.btn-fx:hover::after {
+  content: "";
+  position: absolute;
+
+  animation: fadeIn 2s ease-in-out forwards;
+}
+
+.signup {
+  background-image: url("../../public/bg9.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
+  position: relative;
+}
+.signup > * {
+  position: relative;
+  z-index: 2;
+}
+.signup::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 1;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+  90% {
+    left: 100%;
+    top: -25%;
+    opacity: 1;
+    filter: blur(10);
+    height: 500%;
+    width: 10%;
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.7);
+    rotate: 50deg;
+  }
+  100% {
+    rotate: 0deg;
+    width: 150%;
+    height: 300%;
+    left: -40px;
+    top: -40px;
+    opacity: 1;
+    filter: blur(20);
+  }
+}
