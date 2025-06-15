@@ -1,13 +1,13 @@
 import { Category } from "../../models/category.model.js";
 import { Product } from "../../models/product.model.js";
+import { uploadToCloudinary } from "../../utils/cloudinary.js";
 
-const createProduct = async (req, res) => {
+const createProduct = async (req, res, next) => {
   const {
     name,
     description,
     price,
     category,
-    images,
     stock,
     sizes,
     gender,
@@ -15,6 +15,7 @@ const createProduct = async (req, res) => {
     discountType,
     availability,
   } = req.body;
+  const uploadedImages = [];
 
   try {
     const existingProduct = await Product.findOne({ name, description });
@@ -26,14 +27,25 @@ const createProduct = async (req, res) => {
       });
     }
 
+    for (const file of req.files) {
+      const url = await uploadToCloudinary(file.buffer);
+      uploadedImages.push(url);
+    }
+
+    if (uploadedImages.length === 0) {
+      return res.status(400).json({
+        status: "fail",
+        message: "At least one image is required",
+      });
+    }
     const validatedDiscount = Math.min(Math.max(discount || 0, 0), 100);
 
     const product = await Product.create({
-      name: name.trim(),
-      description: description.trim(),
-      price: parseFloat(price).toFixed(2),
+      name: name?.trim(),
+      description: description,
+      price: parseFloat(price)?.toFixed(2),
       category,
-      images: images.map((img) => img.trim()),
+      images: uploadedImages,
       stock: parseInt(stock),
       discount: validatedDiscount,
       gender,
@@ -51,7 +63,7 @@ const createProduct = async (req, res) => {
       validatedDiscount
     );
     await product.save();
-    console.log(product);
+    console.log("product:",product);
 
     return res.status(201).json({
       status: "success",
@@ -59,14 +71,10 @@ const createProduct = async (req, res) => {
       data: product,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      status: "error",
-      message: error.message,
-    });
+    return next(error);
   }
 };
-const getProducts = async (req, res) => {
+const getProducts = async (req, res, next) => {
   try {
     const products = await Product.find()
       .populate("category")
@@ -76,14 +84,10 @@ const getProducts = async (req, res) => {
       data: products,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      status: "error",
-      message: error.message,
-    });
+    return next(error);
   }
 };
-const getProduct = async (req, res) => {
+const getProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -101,14 +105,10 @@ const getProduct = async (req, res) => {
       data: product,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      status: "error",
-      message: error.message,
-    });
+    return next(error);
   }
 };
-const updateProduct = async (req, res) => {
+const updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
     let {
@@ -180,14 +180,10 @@ const updateProduct = async (req, res) => {
       data: updatedProduct,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      status: "error",
-      message: error.message,
-    });
+    return next(error);
   }
 };
-const deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -212,20 +208,16 @@ const deleteProduct = async (req, res) => {
       message: "Product deleted successfully",
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      status: "error",
-      message: error.message || "Internal Server Error",
-    });
+    return next(error);
   }
 };
 
-const searchProducts = async (req, res) => {};
-const getReviews = async (req, res) => {};
-const getRatings = async (req, res) => {};
-const deleteProducts = async (req, res) => {};
-const deleteReview = async (req, res) => {};
-const deleteReviews = async (req, res) => {};
+const searchProducts = async (req, res, next) => {};
+const getReviews = async (req, res, next) => {};
+const getRatings = async (req, res, next) => {};
+const deleteProducts = async (req, res, next) => {};
+const deleteReview = async (req, res, next) => {};
+const deleteReviews = async (req, res, next) => {};
 
 export {
   createProduct,

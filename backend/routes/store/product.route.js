@@ -7,13 +7,15 @@ import {
   getSearchSuggestions,
 } from "../../controllers/store/product.controller.js";
 import { check_auth } from "../../middleware/auth.middleware.js";
+import { errorHandler } from "../../middleware/error_handler.middleware.js";
 
 // Main Product Routes
-router.route("/").get(getProducts); // GET    /api/products
+router.route("/").get(getProducts);
 router.route("/search-suggestions").get(getSearchSuggestions);
-router.route("/:id").get(getProduct); // GET    /api/products/:productId
+router.route("/:id").get(getProduct);
 
 // Reviews Sub-Routes
-router.route("/:id/reviews").post(check_auth, addReview); // POST   /api/products/:productId/reviews
+router.route("/:id/reviews").post(check_auth, addReview);
 
+router.use(errorHandler);
 export default router;

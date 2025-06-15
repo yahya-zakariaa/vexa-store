@@ -1,6 +1,6 @@
 import { Category } from "../../models/category.model.js";
 
-const getCategories = async (req, res) => {
+const getCategories = async (req, res, next) => {
   try {
     const categories = await Category.find();
     res.status(200).json({
@@ -9,29 +9,26 @@ const getCategories = async (req, res) => {
       total: categories?.length,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      status: "error",
-      message: error.message || "Something went wrong",
-    });
+    return next(error);
   }
 };
 
-const createCategory = async (req, res) => {
+const createCategory = async (req, res, next) => {
   const { name, image, isActive, slug } = req.body;
-  if (!name || !slug) {
+  const { id } = req.user;
+  if (!name || !slug || !image) {
     return res.status(400).json({
       status: "error",
       message: "Missing required fields",
     });
   }
-
   try {
     const category = await Category.create({
       name,
       image,
       isActive: isActive !== "undefined" ? isActive : true,
       slug,
+      createdBy: id,
     });
     res.status(201).json({
       status: "success",
@@ -39,16 +36,11 @@ const createCategory = async (req, res) => {
       data: category,
     });
   } catch (error) {
-    console.log(error);
-
-    res.status(500).json({
-      status: "error",
-      message: error.message || "Something went wrong",
-    });
+    return next(error);
   }
 };
 
-const updateCategory = async (req, res) => {
+const updateCategory = async (req, res, next) => {
   const { name, image, isActive, slug, isFutered } = req.body;
   const { id } = req.params;
   let updateData = {};
@@ -80,15 +72,11 @@ const updateCategory = async (req, res) => {
       data: updatedCategory,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      status: "error",
-      message: error.message || "Something went wrong",
-    });
+    return next(error);
   }
 };
 
-const deleteCategory = async (req, res) => {
+const deleteCategory = async (req, res, next) => {
   const { id } = req.params;
   if (!id) {
     return res.status(400).json({
@@ -109,11 +97,7 @@ const deleteCategory = async (req, res) => {
       message: "Category deleted successfully",
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      status: "error",
-      message: error.message || "Something went wrong",
-    });
+    return next(error);
   }
 };
 

@@ -43,15 +43,15 @@ export const setCookies = (res, access_token, refresh_token) => {
 
   res.cookie("access_token", access_token, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: "strict",
-    expires: new Date(Date.now() + 15 * 60 * 1000),
+    sameSite: "Lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 1000 * 60 * 60 * 3,
   });
 
   res.cookie("refresh_token", refresh_token, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: "strict",
-    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    sameSite: "Lax",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   });
 };

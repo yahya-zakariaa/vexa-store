@@ -18,7 +18,8 @@ const categorySchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: "https://cdn-icons-png.freepik.com/512/5323/5323547.png?ga=GA1.1.1674416738.1740668832",
+      default:
+        "https://cdn-icons-png.freepik.com/512/5323/5323547.png?ga=GA1.1.1674416738.1740668832",
     },
     isActive: {
       type: Boolean,
@@ -35,8 +36,6 @@ const categorySchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
   }
 );
 

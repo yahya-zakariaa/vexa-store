@@ -20,11 +20,8 @@ const productSchema = new mongoose.Schema(
     // Media & Visuals
     images: {
       type: [String],
-      required: [true, "At least one image is required"],
-      validate: {
-        validator: (v) => v.length > 0,
-        message: "At least one image is required",
-      },
+      required: [true],
+      validate: [(array) => array.length > 0, "At least one image is required"],
     },
 
     // Pricing & Sales
@@ -88,6 +85,15 @@ const productSchema = new mongoose.Schema(
       enum: {
         values: ["XS", "S", "M", "L", "XL", "XXL"],
         message: "Size must be one of XS, S, M, L, XL, XXL",
+      },
+    },
+
+    gender: {
+      type: [String],
+      default: "Unisex",
+      enum: {
+        values: ["Men", "Women", "Unisex"],
+        message: "Gender must be one of Men, Women or Unisex",
       },
     },
 

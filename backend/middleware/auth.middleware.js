@@ -5,6 +5,8 @@ import { setCookies, generateTokens } from "../utils/jwt.js";
 
 export const check_auth = (requiredRole = null) => {
   return async (req, res, next) => {
+    console.log("check auth start");
+
     try {
       const { access_token, refresh_token } = req.cookies;
 
@@ -34,7 +36,9 @@ export const check_auth = (requiredRole = null) => {
             process.env.REFRESH_TOKEN_SECRET
           );
 
-          const storedToken = await redis.get(`refresh_token:${refreshDecoded.userId}`);
+          const storedToken = await redis.get(
+            `refresh_token:${refreshDecoded.userId}`
+          );
           if (!storedToken || storedToken !== refresh_token) {
             return res.status(401).json({
               status: "error",
@@ -43,9 +47,15 @@ export const check_auth = (requiredRole = null) => {
           }
 
           // Generate new tokens
-          const newTokens = await generateTokens(refreshDecoded.userId, refreshDecoded.role);
+          const newTokens = await generateTokens(
+            refreshDecoded.userId,
+            refreshDecoded.role
+          );
           setCookies(res, newTokens.access_token, newTokens.refresh_token);
-          decoded = { userId: refreshDecoded.userId, role: refreshDecoded.role };
+          decoded = {
+            userId: refreshDecoded.userId,
+            role: refreshDecoded.role,
+          };
         } catch (refreshErr) {
           return res.status(401).json({
             status: "error",
@@ -70,7 +80,6 @@ export const check_auth = (requiredRole = null) => {
           message: "Forbidden: Insufficient permissions",
         });
       }
-
       next();
     } catch (err) {
       console.error("check_auth error:", err);
@@ -79,5 +88,7 @@ export const check_auth = (requiredRole = null) => {
         message: err.message || "Internal server error",
       });
     }
+
+    console.log("check auth end");
   };
 };

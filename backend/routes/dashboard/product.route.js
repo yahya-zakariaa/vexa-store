@@ -12,8 +12,9 @@ import {
   getProduct,
   searchProducts,
 } from "../../controllers/dashboard/product.controller.js";
-import { validateProductFields } from "../../middleware/verify_product_fields.js";
+import { verify_product } from "../../middleware/verify_product.middleware.js";
 import { check_auth } from "../../middleware/auth.middleware.js";
+import { upload } from "../../middleware/multer.middleware.js";
 
 const router = express.Router();
 
@@ -22,7 +23,7 @@ router.use(check_auth("admin"));
 // Main Product Routes
 router
   .route("/")
-  .post(validateProductFields, createProduct)
+  .post(upload.array("images", 5), verify_product, createProduct)
   .get(getProducts)
   .delete(deleteProducts);
 

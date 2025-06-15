@@ -1,7 +1,7 @@
 import User from "../../models/user.model.js";
 import { generateTokens, deleteTokens, setCookies } from "../../utils/jwt.js";
 
-const adminLogin = async (req, res) => {
+const adminLogin = async (req, res, next) => {
   const { identifier, password } = req.body;
 
   if (!identifier || !password) {
@@ -48,12 +48,11 @@ const adminLogin = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ status: "error", message: "Internal server error" });
+    return next(error);
   }
 };
 
-const adminLogout = async (req, res) => {
+const adminLogout = async (req, res, next) => {
   try {
     const { refresh_token } = req.cookies;
     if (!refresh_token) {
@@ -68,11 +67,7 @@ const adminLogout = async (req, res) => {
 
     res.status(200).json({ status: "success", message: "Logout successful" });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      status: "error",
-      message: error.message || "Internal server error",
-    });
+    return next(error);
   }
 };
 

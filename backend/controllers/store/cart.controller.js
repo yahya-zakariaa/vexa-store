@@ -1,7 +1,7 @@
 import User from "../../models/user.model.js";
 import { Cart } from "./../../models/cart.model.js";
 
-const addToCart = async (req, res) => {
+const addToCart = async (req, res, next) => {
   try {
     const { id: productId } = req.params;
     let { quantity = 1, size, color } = req.body;
@@ -56,14 +56,10 @@ const addToCart = async (req, res) => {
       data: cart.items,
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      status: "error",
-      message: error.message || "Something went wrong",
-    });
+    return next(error);
   }
 };
-const getCart = async (req, res) => {
+const getCart = async (req, res, next) => {
   const { id } = req.user;
 
   try {
@@ -86,14 +82,10 @@ const getCart = async (req, res) => {
       data: cart.items || [],
     });
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({
-      status: "error",
-      message: error.message || "Something went wrong",
-    });
+    return next(error);
   }
 };
-const updateProductInCart = async (req, res) => {
+const updateProductInCart = async (req, res, next) => {
   const { id: productId } = req.params;
   const { size, quantity, color } = req.body;
   const { id } = req.user;
@@ -143,14 +135,10 @@ const updateProductInCart = async (req, res) => {
       data: cart.items,
     });
   } catch (error) {
-    console.error("updateProductInCart error:", error);
-    return res.status(500).json({
-      status: "error",
-      message: error.message || "Something went wrong",
-    });
+    return next(error);
   }
 };
-const deleteProductInCart = async (req, res) => {
+const deleteProductInCart = async (req, res, next) => {
   const { id: productId } = req.params;
   const { id } = req.user;
   if (!productId) {
@@ -184,14 +172,10 @@ const deleteProductInCart = async (req, res) => {
       message: "cart deleted successfully",
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      status: "error",
-      message: error.message || "Something went wrong",
-    });
+    return next(error);
   }
 };
-const deleteCart = async (req, res) => {
+const deleteCart = async (req, res, next) => {
   const { id } = req.user;
 
   try {
@@ -213,11 +197,7 @@ const deleteCart = async (req, res) => {
       data: [],
     });
   } catch (error) {
-    console.error("deleteCart error:", error);
-    return res.status(500).json({
-      status: "error",
-      message: error.message || "Something went wrong",
-    });
+    return next(error);
   }
 };
 

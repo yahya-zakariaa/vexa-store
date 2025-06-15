@@ -1,7 +1,7 @@
 import { Product } from "../../models/product.model.js";
 import Review from "../../models/reviews.model.js";
 
-const getProducts = async (req, res) => {
+const getProducts = async (req, res, next) => {
   const { limit = 10, page = 1, category, q } = req.query;
 
   const skip = (page - 1) * limit;
@@ -23,22 +23,23 @@ const getProducts = async (req, res) => {
       .sort({ avgRating: -1 })
       .skip(skip)
       .limit(parseInt(limit));
-
+    if (!products) {
+      return res.status(200).json({
+        status: "success",
+        data: [],
+      });
+    }
     res.status(200).json({
       status: "success",
       data: products,
       total: products?.length,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      status: "error",
-      message: error.message || "Something went wrong",
-    });
+    return next(error);
   }
 };
 
-const getProduct = async (req, res) => {
+const getProduct = async (req, res, next) => {
   const { id } = req.params;
   try {
     const product = await Product.findById(id);
@@ -53,15 +54,11 @@ const getProduct = async (req, res) => {
       data: product || [],
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      status: "error",
-      message: error.message || "Something went wrong",
-    });
+    return next(error);
   }
 };
 
-const addReview = async (req, res) => {
+const addReview = async (req, res, next) => {
   const { id } = req.params;
   const { review, rating } = req.body;
   const { _id } = req.user;
@@ -84,14 +81,10 @@ const addReview = async (req, res) => {
       data: review,
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      status: "error",
-      message: error.message || "Something went wrong",
-    });
+    return next(error);
   }
 };
-const getSearchSuggestions = async (req, res) => {
+const getSearchSuggestions = async (req, res, next) => {
   const { q } = req.query;
 
   try {
@@ -115,11 +108,7 @@ const getSearchSuggestions = async (req, res) => {
       total: products.length,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      status: "error",
-      message: error.message || "Something went wrong",
-    });
+    return next(error);
   }
 };
 

@@ -1,7 +1,7 @@
 import User from "../../models/user.model.js";
 import { generateTokens, setCookies, deleteTokens } from "../../utils/jwt.js";
 
-const signup = async (req, res) => {
+const signup = async (req, res, next) => {
   const { name, email, password, phone, address } = req.body;
   if (!name || !email || !password || !phone)
     return res.status(400).json("Missing required fields");
@@ -50,15 +50,11 @@ const signup = async (req, res) => {
       refresh_token,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      status: "error",
-      message: error.message,
-    });
+    return next(error);
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   const { identifier, password } = req.body;
 
   if (!identifier || !password)
@@ -74,10 +70,11 @@ const login = async (req, res) => {
       return res
         .status(401)
         .json({ status: "error", message: "Invalid credentials" });
-        if(user.role === "admin") return res.status(403).json({
-          error:"error",
-          message:"Forbidden: Insufficient permissions"
-        })
+    if (user.role === "admin")
+      return res.status(403).json({
+        error: "error",
+        message: "Forbidden: Insufficient permissions",
+      });
     const isMatch = await user.comparePassword(password);
     if (!isMatch)
       return res
@@ -111,15 +108,11 @@ const login = async (req, res) => {
       refresh_token,
     });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      status: "error",
-      message: error.message,
-    });
+    return next(error);
   }
 };
 
-const logout = (req, res) => {
+const logout = (req, res, next) => {
   try {
     if (req.user) {
       deleteTokens(req.user.id);
@@ -141,11 +134,7 @@ const logout = (req, res) => {
       .status(200)
       .json({ status: "success", message: "Logged out successfully" });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      status: "error",
-      message: error.message,
-    });
+    return next(error);
   }
 };
 
