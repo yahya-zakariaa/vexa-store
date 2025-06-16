@@ -23,15 +23,22 @@ const getProducts = async (req, res, next) => {
       .sort({ avgRating: -1 })
       .skip(skip)
       .limit(parseInt(limit));
+
     if (!products) {
       return res.status(200).json({
         status: "success",
         data: [],
       });
     }
-    res.status(200).json({
+    const productsWithTotalPrice = products.map((product) => ({
+      ...product.toObject(),
+      totalPrice: Number(
+        (product.price * (1 - product.discount / 100)).toFixed(0)
+      ),
+    }));
+    return res.status(200).json({
       status: "success",
-      data: products,
+      data: productsWithTotalPrice,
       total: products?.length,
     });
   } catch (error) {

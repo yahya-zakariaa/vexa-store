@@ -89,7 +89,7 @@ const productSchema = new mongoose.Schema(
     },
 
     gender: {
-      type: [String],
+      type: String,
       default: "Unisex",
       enum: {
         values: ["Men", "Women", "Unisex"],
@@ -151,7 +151,7 @@ productSchema.pre("findOneAndUpdate", async function (next) {
         ? update.discount
         : (await this.model.findOne(this.getQuery())).discount;
     update.totalPrice = price * (1 - discount / 100);
-    update.totalPrice = Math.max(update.totalPrice, 0);
+    this.totalPrice = Number(Math.max(this.totalPrice, 0).toFixed(0));
   }
 
   if (update.stock !== undefined) {
@@ -163,14 +163,14 @@ productSchema.pre("findOneAndUpdate", async function (next) {
 // Helper methods
 productSchema.methods.calculateTotalPrice = function () {
   this.totalPrice = this.price * (1 - this.discount / 100);
-  this.totalPrice = Math.max(this.totalPrice, 0);
+  this.totalPrice = Number(Math.max(this.totalPrice, 0).toFixed(0));
 };
 
 productSchema.methods.checkAvailability = function () {
-  this.availability = this.countInStock > 0;
+  this.availability = this.stock > 0;
 };
 
-productSchema.index({ name: "text", description: "text", tags: "text" });
-productSchema.index({ category: 1, brand: 1 });
+productSchema.index({ name: "text", description: "text" });
+productSchema.index({ category: 1 });
 
 export const Product = mongoose.model("Product", productSchema);

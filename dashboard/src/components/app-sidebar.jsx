@@ -31,20 +31,12 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "Veiw products",
+          title: "Veiw Products",
           url: "/dashboard/products",
         },
         {
-          title: "Add product",
-          url: "/dashboard/products/add-product",
-        },
-        {
-          title: "Update product",
-          url: "#",
-        },
-        {
-          title: "Remove product",
-          url: "#",
+          title: "Create Product",
+          url: "/dashboard/products/create-product",
         },
       ],
     },
@@ -55,14 +47,10 @@ const data = {
       items: [
         {
           title: "Veiw users",
-          url: "/dashboard/products",
-        },
-        {
-          title: "Upgrate user",
           url: "#",
         },
         {
-          title: "Remove user",
+          title: "Create User",
           url: "#",
         },
       ],
@@ -73,15 +61,11 @@ const data = {
       icon: Shield,
       items: [
         {
-          title: "Veiw admins",
+          title: "Veiw Admins",
           url: "#",
         },
         {
-          title: "Add admin",
-          url: "#",
-        },
-        {
-          title: "Remove admin",
+          title: "Create admin",
           url: "#",
         },
       ],
@@ -92,19 +76,15 @@ const data = {
       icon: BadgePercent,
       items: [
         {
-          title: "New Offer Notification",
+          title: "Notifications",
           url: "#",
         },
         {
-          title: "New Cupon Notification",
+          title: "Veiw Cupons",
           url: "#",
         },
         {
-          title: "New Product Notification",
-          url: "#",
-        },
-        {
-          title: "New Sezon Notification",
+          title: "Create Cupon",
           url: "#",
         },
       ],
@@ -115,16 +95,7 @@ const data = {
       icon: ChartPie,
       items: [
         {
-          title: "Revenue analytics",
-          url: "#",
-        },
-
-        {
-          title: "Product analytics",
-          url: "#",
-        },
-        {
-          title: "User engagement",
+          title: "Analytics",
           url: "#",
         },
         {
@@ -160,11 +131,10 @@ const data = {
 };
 
 export function AppSidebar({ ...props }) {
-
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="border-b">
-        <NavUser  />
+        <NavUser />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />

@@ -63,7 +63,7 @@ const createProduct = async (req, res, next) => {
       validatedDiscount
     );
     await product.save();
-    console.log("product:",product);
+    console.log("product:", product);
 
     return res.status(201).json({
       status: "success",
@@ -79,9 +79,23 @@ const getProducts = async (req, res, next) => {
     const products = await Product.find()
       .populate("category")
       .sort({ avgReting: -1 });
+
+    if (!products) {
+      return res.status(200).json({
+        status: "success",
+        data: [],
+      });
+    }
+    const productsWithTotalPrice = products.map((product) => ({
+      ...product.toObject(),
+      totalPrice: Number(
+        (product.price * (1 - product.discount / 100)).toFixed(0)
+      ),
+    }));
     return res.status(200).json({
       status: "success",
-      data: products,
+      data: productsWithTotalPrice,
+      total: products?.length,
     });
   } catch (error) {
     return next(error);

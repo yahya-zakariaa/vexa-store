@@ -1,21 +1,28 @@
-import React from 'react'
-import  Image  from 'next/image';
+"use client"
+import React, { useEffect, useState } from "react";
+import ProductTable from "@/components/Product/ProductTable/ProductTable";
+import useProductStore from "@/store/useProductStore";
 
 export default function page() {
+  const { getProducts } = useProductStore();
+  const [products, setProducts] = useState([]);
+  const fetchProduct = async () => {
+    try {
+      const res = await getProducts();
+      setProducts(res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProduct();
+    console.log(products);
+    
+  }, []);
   return (
-    <section className=' w-full h-full'>
-      <div className="container grid grid-cols-3 gap-4 p-5">
-        <div className="product-card bg-black rounded-lg">
-            <div className="card-header bg-gray-500">
-                <Image
-                src={"/../../../public/next.svg"}
-                alt="produrct-image"
-                width={100}
-                height={100}
-                />
-            </div>
-        </div>
-      </div>
+    <section className="px-16">
+    <ProductTable products={products} />
     </section>
-  )
+  );
 }
