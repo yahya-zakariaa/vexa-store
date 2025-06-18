@@ -25,21 +25,21 @@ export default function ProductTable({ products }) {
 
   return (
     <div className="flex flex-col items-center justify-center w-full gap-3 ">
-      <div className="header grid md:grid-cols-10 grid-cols-7  place-items-center w-full bg-gray-100 shadow rounded-md px-5 py-5">
-        <div className="col w-full h-full md:flex hidden items-center justify-start">Image</div>
+      <div className="header grid min-[1200px]:grid-cols-10 grid-cols-6  place-items-center w-full bg-gray-100 shadow rounded-md px-5 py-5">
+        <div className="col w-full h-full min-[1200px]:flex hidden items-center justify-start">Image</div>
         <div className="col w-full h-full col-span-2 flex items-center justify-start  ">Name</div>
-        <div className="col w-full h-full  md:flex hidden  items-center justify-start">Category</div>
+        <div className="col w-full h-full  min-[1200px]:flex hidden  items-center justify-start">Category</div>
         <div className="col w-full h-full flex items-center justify-center">Price</div>
         <div className="col w-full h-full flex items-center justify-center">Stock</div>
-        <div className="col w-full h-full flex items-center justify-center">Total Sold</div>
-        <div className="col w-full h-full flex items-center justify-end  md:col-start-9">Status</div>
+        <div className="col w-full h-full flex items-center justify-center"> Sold</div>
+        <div className="col w-full h-full  min-[1200px]:flex hidden items-center justify-end  md:col-start-9">Status</div>
         <div className="col w-full h-full flex items-center justify-end  md:col-start-10">Actions</div>
       </div>
 
       {Array.isArray(products) &&
         products?.map((product) => (
-          <div className="row grid md:grid-cols-10 grid-cols-7 place-items-center w-full min-h-[90px] bg-gray-100 shadow rounded-md px-3 py-2">
-            <div className="col w-full h-full md:flex hidden items-center justify-start">
+          <div className="row grid min-[1200px]:grid-cols-10 grid-cols-6 place-items-center w-full min-h-[90px] bg-gray-100 shadow rounded-md px-3 py-2">
+            <div className="col w-full h-full min-[1200px]:flex hidden items-center justify-start">
               <Image
                 className="rounded object-cover"
                 alt={"none"}
@@ -48,14 +48,14 @@ export default function ProductTable({ products }) {
                 height={50}
               />
             </div>
-            <div className="col w-full h-full col-span-2 flex items-center justify-start ">
+            <div className="col w-full h-full col-span-2 flex items-center justify-start min-[500px]:text-[16px]  text-[14px] ">
               {product.name}
             </div>
-            <div className="col w-full h-full  md:flex hidden  items-center justify-start">{product.category.name}</div>
-            <div className="col w-full h-full flex items-center justify-center">{product.totalPrice} EGP</div>
-            <div className="col w-full h-full flex items-center justify-center">{product.stock}</div>
-            <div className="col w-full h-full flex items-center justify-center">{product.totalSold}</div>
-            <div className="col w-full h-full flex items-center justify-end  md:col-start-9">
+            <div className="col w-full h-full  min-[1200px]:flex hidden  items-center justify-start">{product.category.name}</div>
+            <div className="col w-full h-full flex items-center justify-center min-[500px]:text-[16px]  text-[14px]">{product.totalPrice} EGP</div>
+            <div className="col w-full h-full flex items-center justify-center min-[500px]:text-[16px]  text-[14px]">{product.stock}</div>
+            <div className="col w-full h-full flex items-center justify-center min-[500px]:text-[16px]  text-[14px]">{product.totalSold}</div>
+            <div className="col w-full h-full  min-[1200px]:flex hidden items-center justify-end  md:col-start-9">
               <div className="toggler ">
                 <input
                   id={`toggler-${product._id}`}
@@ -158,7 +158,7 @@ export default function ProductTable({ products }) {
 //       <TableHead className="text-center w-[200px]  max-[1000px]:hidden">
 //         Category
 //       </TableHead>
-//       <TableHead className="text-center min-[1000px]:w-[150px] w-[350px]  ">
+//       <TableHead className="text-center min-[1200px]:w-[150px] w-[350px]  ">
 //         Price
 //       </TableHead>
 //       <TableHead className="max-[1000px]:w-[150px]  text-center">
@@ -167,7 +167,7 @@ export default function ProductTable({ products }) {
 //       <TableHead className="text-center max-[1000px]:w-[150px]  ">
 //         Total Sold
 //       </TableHead>
-//       <TableHead className=" text-center min-[1000px]:ps-[100px] w-[500px]">
+//       <TableHead className=" text-center min-[1200px]:ps-[100px] w-[500px]">
 //         Status
 //       </TableHead>
 //       <TableHead className="text-right pe-13 w-[200px]">Actions</TableHead>

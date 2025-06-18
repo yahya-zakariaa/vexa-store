@@ -21,7 +21,7 @@ export default function page() {
     
   }, []);
   return (
-    <section className="md:px-16">
+    <section className="min-[1000px]:px-16 px-5">
     <ProductTable products={products} />
     </section>
   );
