@@ -1,4 +1,4 @@
-import axiosInstance from "@/utils/axiosInstance";
+import axiosInstance from "@/lib/axiosInstance";
 import { create } from "zustand";
 
 const useAdminStore = create((set, get) => ({

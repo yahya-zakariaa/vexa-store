@@ -1,6 +1,17 @@
 import React from "react";
 
-export default function GeneralInfo({ formik }) {
+export default function GeneralInfo({ formik, isEditable }) {
+  const sizesList = ["XS", "S", "M", "L", "XL", "XXL"];
+
+  const handleSizeToggle = (size) => {
+    const currentSizes = formik.values.sizes || [];
+    const updatedSizes = currentSizes.includes(size)
+      ? currentSizes.filter((s) => s !== size)
+      : [...currentSizes, size];
+
+    formik.setFieldValue("sizes", updatedSizes);
+  };
+
   return (
     <div className="general-info bg-gray-100 rounded-md p-4 w-full ">
       <div className="header">
@@ -16,8 +27,12 @@ export default function GeneralInfo({ formik }) {
           name="name"
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
+          readOnly={!isEditable}
+          disabled={!isEditable}
           value={formik.values.name || ""}
-          className="bg-slate-200 border border-gray-300  rounded-md px-3 py-2 w-full "
+          className={`bg-slate-200 border border-gray-300  rounded-md px-3 py-2 w-full ${
+            !isEditable ? "opacity-50 curosr-default" : ""
+          } `}
         />
       </div>
       <div className="form-group flex flex-col gap-2 items-start mt-7  ">
@@ -31,8 +46,12 @@ export default function GeneralInfo({ formik }) {
           rows={4}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
+          readOnly={!isEditable}
+          disabled={!isEditable}
           value={formik.values.description || ""}
-          className="bg-slate-200 border border-gray-300  rounded-md px-3 py-2 w-full "
+          className={`bg-slate-200 border border-gray-300  rounded-md px-3 py-2 w-full ${
+            !isEditable ? "opacity-50 curosr-default" : ""
+          } `}
         ></textarea>
       </div>
       <div className="form-group mt-7 flex md:flex-row flex-col md:items-center items-start md:gap-0 gap-10 justify-between">
@@ -43,97 +62,29 @@ export default function GeneralInfo({ formik }) {
               Pick Available Size
             </p>
           </div>
-          <ul className="items-center w-full flex gap-3">
-            <li className="flex">
-              <input
-                type="checkbox"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.sizes.XS || false}
-                name="sizes.XS"
-                id="XS"
-                className="peer hidden"
-              />
-              <label
-                htmlFor="XS"
-                className="select-none cursor-pointer rounded-lg border-2 border-black
-   py-2 flex items-center justify-center w-[50px] font-medium text-black transition-colors duration-200 ease-in-out peer-checked:bg-black peer-checked:text-white peer-checked:border-black "
-              >
-                XS
-              </label>
-            </li>
-            <li className="flex">
-              <input
-                type="checkbox"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.sizes.S || false}
-                name="sizes.S"
-                id="S"
-                className="peer hidden"
-              />
-              <label
-                htmlFor="S"
-                className="select-none cursor-pointer rounded-lg border-2 border-black
-   py-2 flex items-center justify-center w-[50px] font-medium text-black transition-colors duration-200 ease-in-out peer-checked:bg-black peer-checked:text-white peer-checked:border-black "
-              >
-                S
-              </label>
-            </li>
-            <li className="flex">
-              <input
-                type="checkbox"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.sizes.M || false}
-                name="sizes.M"
-                id="M"
-                className="peer hidden"
-              />
-              <label
-                htmlFor="M"
-                className="select-none cursor-pointer rounded-lg border-2 border-black
-   py-2 flex items-center justify-center w-[50px] font-medium text-black transition-colors duration-200 ease-in-out peer-checked:bg-black peer-checked:text-white peer-checked:border-black "
-              >
-                M
-              </label>
-            </li>
-            <li className="flex">
-              <input
-                type="checkbox"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.sizes.XL || false}
-                name="sizes.XL"
-                id="XL"
-                className="peer hidden"
-              />
-              <label
-                htmlFor="XL"
-                className="select-none cursor-pointer rounded-lg border-2 border-black
-   py-2 flex items-center justify-center w-[50px] font-medium text-black transition-colors duration-200 ease-in-out peer-checked:bg-black peer-checked:text-white peer-checked:border-black "
-              >
-                XL
-              </label>
-            </li>
-            <li className="flex">
-              <input
-                type="checkbox"
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.sizes.XXL || false}
-                name="sizes.XXL"
-                id="XXL"
-                className="peer hidden"
-              />
-              <label
-                htmlFor="XXL"
-                className="select-none cursor-pointer rounded-lg border-2 border-black
-   py-2 flex items-center justify-center w-[50px] font-medium text-black transition-colors duration-200 ease-in-out peer-checked:bg-black peer-checked:text-white peer-checked:border-black "
-              >
-                XXL
-              </label>
-            </li>
+          <ul className="items-center w-full flex gap-3 flex-wrap">
+            {sizesList.map((size) => (
+              <li key={size} className="flex">
+                <input
+                  type="checkbox"
+                  id={size}
+                  checked={formik.values.sizes.includes(size)}
+                  onChange={() => handleSizeToggle(size)}
+                  disabled={!isEditable}
+                  className="peer hidden"
+                />
+                <label
+                  htmlFor={size}
+                  className={`select-none  rounded-lg border-2 
+          py-2 flex items-center justify-center w-[50px] font-medium  
+          transition-colors duration-200 ease-in-out 
+          border-black text-black peer-checked:border-black peer-checked:text-white peer-checked:bg-black
+             ${!isEditable ? "opacity-50" : "cursor-pointer "}`}
+                >
+                  {size}
+                </label>
+              </li>
+            ))}
           </ul>
         </div>
         <div className="2">
@@ -143,31 +94,41 @@ export default function GeneralInfo({ formik }) {
               Pick Available Gender
             </p>
           </div>
-          <div className="flex gap-10">
-            <div className="inline-flex items-center">
+          <div className="flex md:gap-10 gap-7 flex-wrap">
+            <div
+              className={`inline-flex items-center ${
+                !isEditable ? "opacity-50" : ""
+              }`}
+            >
               <label
                 className="relative flex items-center cursor-pointer"
-                htmlFor="women"
+                htmlFor="Women"
               >
                 <input
                   name="gender"
                   value="Women"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  disabled={!isEditable}
+                  checked={formik.values.gender === "Women"}
                   type="radio"
                   className="peer h-5 w-5 cursor-pointer appearance-none rounded-full border-2 border-black transition-all"
-                  id="women"
+                  id="Women"
                 />
                 <span className="absolute bg-black w-3 h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
               </label>
               <label
                 className="ml-2 text-black cursor-pointer text-md font-medium"
-                htmlFor="women"
+                htmlFor="Women"
               >
                 Women
               </label>
             </div>
-            <div className="inline-flex items-center">
+            <div
+              className={`inline-flex items-center ${
+                !isEditable ? "opacity-50" : ""
+              }`}
+            >
               <label
                 className="relative flex items-center cursor-pointer"
                 htmlFor="Men"
@@ -177,6 +138,8 @@ export default function GeneralInfo({ formik }) {
                   value="Men"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  disabled={!isEditable}
+                  checked={formik.values.gender === "Men"}
                   type="radio"
                   className="peer h-5 w-5 cursor-pointer appearance-none rounded-full border-2 border-black transition-all"
                   id="Men"
@@ -190,31 +153,70 @@ export default function GeneralInfo({ formik }) {
                 Men
               </label>
             </div>
-            <div className="inline-flex items-center">
+            <div
+              className={`inline-flex items-center ${
+                !isEditable ? "opacity-50" : ""
+              }`}
+            >
               <label
                 className="relative flex items-center cursor-pointer"
-                htmlFor="unisex"
+                htmlFor="Unisex"
               >
                 <input
                   name="gender"
                   value="Unisex"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
+                  disabled={!isEditable}
                   type="radio"
                   checked={formik.values.gender === "Unisex"}
                   className="peer h-5 w-5 cursor-pointer appearance-none rounded-full border-2 border-black transition-all"
-                  id="unisex"
+                  id="Unisex"
                 />
                 <span className="absolute bg-black w-3 h-3 rounded-full opacity-0 peer-checked:opacity-100 transition-opacity duration-200 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></span>
               </label>
               <label
                 className="ml-2 text-black cursor-pointer text-md font-medium"
-                htmlFor="unisex"
+                htmlFor="Unisex"
               >
                 Unisex
               </label>
             </div>
           </div>
+        </div>
+      </div>
+      <div className="form-group mt-7 flex md:flex-row flex-col md:items-center items-start md:gap-0 gap-10 justify-between">
+        <div className="1">
+          <div className="header mb-4 ">
+            <h3 className="font-bold text-black text-[16px]">Availability</h3>
+            <p className="text-[#333] text-sm font-medium">
+              Toggle Availability
+            </p>
+          </div>
+          <label
+            htmlFor="Toggle3"
+            className={`inline-flex items-center  rounded-md  ${
+              !isEditable ? "opacity-50 " : " cursor-pointer"
+            }`}
+          >
+            <input
+              id="Toggle3"
+              type="checkbox"
+              name="availability"
+              checked={formik.values.availability}
+              disabled={!isEditable}
+              onChange={(e) =>
+                formik.setFieldValue("availability", e.target.checked)
+              }
+              className="hidden peer"
+            />
+            <span className="px-4 py-2 rounded-l-lg bg-gray-300 text-black peer-checked:text-white peer-checked:bg-black">
+              Available
+            </span>
+            <span className="px-4 py-2 rounded-r-lg bg-black text-white peer-checked:text-black peer-checked:bg-gray-300">
+              Unavailable
+            </span>
+          </label>
         </div>
       </div>
     </div>

@@ -1,94 +1,113 @@
-import axiosInstance from "@/utils/axiosInstance";
+import axiosInstance from "@/lib/axiosInstance";
 import { toast } from "sonner";
 import { create } from "zustand";
 
 const useProductStore = create((set, get) => ({
   createProduct: async (data) => {
-    try {
-      const formData = new FormData();
+    const formData = new FormData();
 
-      formData.append("name", data.name);
-      formData.append("description", data.description);
-      formData.append("gender", data.gender);
-      formData.append("price", data.price);
-      formData.append("stock", data.stock);
-      formData.append("discount", data.discount);
-      formData.append("discountType", data.discountType);
-      formData.append("category", data.category);
-      formData.append("availability", data.availability);
+    // جمع البيانات
+    Object.keys(data).forEach((k) => {
+      if (k === "sizes") {
+        if (Array.isArray(data[k])) {
+          data[k].forEach((size) => formData.append("sizes[]", size));
+        } else {
+          throw new Error("Sizes must be an array");
+        }
+      } else if (k !== "images") {
+        formData.append(k, data[k]);
+      }
+    });
 
-      formData.append("sizes", JSON.stringify(data.sizes));
-
+    // الصور
+    if ("images" in data && Array.isArray(data.images)) {
       data.images.forEach((img) => {
-        formData.append("images", img.file);
+        if (typeof img === "object" && img?.file) {
+          formData.append("files", img.file);
+        } else {
+          throw new Error("Something went wrong when uploading images");
+        }
       });
+    } else {
+      throw new Error("Must select at least one image");
+    }
 
+    try {
       const res = await axiosInstance.post("/dashboard/products", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      if (res.status === 201) {
-        return toast.success("Product Created Successfully");
-      }
+      return res.data;
     } catch (error) {
-      console.log(error);
-      if (error?.data?.message) {
-        return toast.error(error.data.message);
+      console.error(error);
+
+      if (error?.response?.data?.message) {
+        throw new Error(error.response.data.message);
       }
-      return toast.error("Something went wrong");
+
+      throw new Error("Something went wrong while creating the product");
     }
   },
   updateProduct: async (data, productId) => {
-    try {
-      const formData = new FormData();
+    const formData = new FormData();
 
-      formData.append("name", data.name);
-      formData.append("description", data.description);
-      formData.append("gender", data.gender);
-      formData.append("price", data.price);
-      formData.append("stock", data.stock);
-      formData.append("discount", data.discount);
-      formData.append("discountType", data.discountType);
-      formData.append("category", data.category);
-      formData.append("availability", data.availability);
+    Object.keys(data).forEach((k) => {
+      if (k === "sizes") {
+        if (Array.isArray(data[k])) {
+          data[k].forEach((size) => formData.append("sizes[]", size));
+        } else {
+          throw new Error("Sizes must be an array");
+        }
+      } else if (k !== "images") {
+        formData.append(k, data[k]);
+      }
+    });
 
-      formData.append("sizes", JSON.stringify(data.sizes));
-
+    if ("images" in data && Array.isArray(data.images)) {
       data.images.forEach((img) => {
-        if (typeof img === "object" && img.file) {
-          formData.append("images", img.file);
+        if (typeof img === "object" && img?.file) {
+          formData.append("files", img?.file);
         } else if (
           typeof img === "string" &&
-          img.startsWith("https://res.cloudinary.com/docsb24m0/image/upload")
+          img.startsWith("https://res.cloudinary.com/")
         ) {
-          formData.append("images", img);
+          formData.append("images[]", img);
         } else {
-          return toast.error("Something went worng when upload images");
+          throw new Error("Something went wrong when uploading images");
         }
       });
+    }
 
-      const res = await axiosInstance.patch("/dashboard/products", formData, {
+    const res = await axiosInstance.patch(
+      `/dashboard/products/${productId}`,
+      formData,
+      {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      });
+      }
+    );
 
-      if (res.status === 200) {
-        return toast.success("Product Updated Successfully");
-      }
-    } catch (error) {
-      console.log(error);
-      if (error?.data?.message) {
-        return toast.error(error.data.message);
-      }
-      return toast.error("Something went wrong");
-    }
+    return res.data;
   },
   getProducts: async () => {
     try {
       const res = await axiosInstance.get("/dashboard/products");
+      console.log(res);
+      return res.data.data;
+    } catch (error) {
+      console.log(error);
+      if (error?.data?.message) {
+        return toast.error(error.data.message);
+      }
+      return toast.error("Something went wrong");
+    }
+  },
+  getProduct: async (productId) => {
+    try {
+      const res = await axiosInstance.get(`/dashboard/products/${productId}`);
       console.log(res);
       return res.data.data;
     } catch (error) {

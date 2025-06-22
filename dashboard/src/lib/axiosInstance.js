@@ -11,14 +11,12 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     console.log(error);
 
-    if (
-      !error.response
-    ) {
-      return toast.error("Please check your internet connection");
+    if (!error.response && error.message === "Network Error") {
+      return toast.error("Connection Error", {
+        description: "Please check your internet connection.",
+      });
     }
-    if (
-      error?.response?.data?.message?.includes("buffering timed out") 
-    ) {
+    if (error?.response?.data?.message?.includes("buffering timed out")) {
       return toast.error("Server connection time out");
     }
 

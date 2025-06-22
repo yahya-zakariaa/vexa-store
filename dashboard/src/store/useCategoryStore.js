@@ -1,4 +1,4 @@
-import axiosInstance from "@/utils/axiosInstance";
+import axiosInstance from "@/lib/axiosInstance";
 import { toast } from "sonner";
 import { create } from "zustand";
 

@@ -2,9 +2,10 @@
 import React, { useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 
-export default function ImageUploader({ images, setImages }) {
+export default function ImageUploader({ images, setImages, isEditable }) {
   const onDrop = useCallback(
     (acceptedFiles) => {
+      if (!isEditable) return; // منع رفع الصور لو مش editable
       const newImages = acceptedFiles.map((file) => ({
         file,
         preview: URL.createObjectURL(file),
@@ -13,18 +14,18 @@ export default function ImageUploader({ images, setImages }) {
       }));
       setImages((prev) => [...(Array.isArray(prev) ? prev : []), ...newImages]);
     },
-    [images, setImages]
+    [images, setImages, isEditable]
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      "image/*": [],
-    },
+    accept: { "image/*": [] },
     multiple: true,
+    disabled: !isEditable, // تعطيل كامل للـ Dropzone
   });
 
   const removeImage = (index) => {
+    if (!isEditable) return;
     setImages((prev) => {
       const updated = Array.isArray(prev) ? [...prev] : [];
       updated.splice(index, 1);
@@ -46,7 +47,9 @@ export default function ImageUploader({ images, setImages }) {
 
       <div
         {...getRootProps()}
-        className="w-full h-[170px] border-2 border-dashed border-gray-400 flex items-center justify-center cursor-pointer rounded-lg"
+        className={`w-full h-[170px] border-2 border-dashed border-gray-400 flex items-center justify-center rounded-lg ${
+          isEditable ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
+        }`}
       >
         <input {...getInputProps()} />
         {isDragActive ? (
@@ -60,16 +63,21 @@ export default function ImageUploader({ images, setImages }) {
         {Array.isArray(images) &&
           images.map((img, index) => (
             <div key={index} className="group relative">
-              <button
-                onClick={() => removeImage(index)}
-                className="absolute cursor-pointer top-[-10px] right-[-5px] bg-black text-white w-[20px] text-[12px] h-[20px] flex items-center justify-center rounded-full"
-              >
-                X
-              </button>
+              {isEditable && (
+                <button
+                  type="button"
+                  onClick={() => removeImage(index)}
+                  className="absolute cursor-pointer top-[-10px] right-[-5px] bg-black text-white w-[20px] text-[12px] h-[20px] flex items-center justify-center rounded-full"
+                >
+                  X
+                </button>
+              )}
               <img
-                src={img.preview}
+                src={img.preview || img}
                 alt={img.name}
-                className="object-contain rounded-sm"
+                className={`object-contain rounded-sm ${
+                  !isEditable ? "opacity-50" : ""
+                }`}
               />
             </div>
           ))}

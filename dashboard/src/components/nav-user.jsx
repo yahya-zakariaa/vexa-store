@@ -26,10 +26,14 @@ import { useEffect } from "react";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { admin } = useAdminStore();
   const { logout } = useAuthStore();
   const router = useRouter();
+  const { getMe, admin } = useAdminStore();
 
+  useEffect(() => {
+    if (admin?.name) return;
+    getMe();
+  }, [admin]);
   return (
     <SidebarMenu>
       <SidebarMenuItem>

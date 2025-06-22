@@ -1,6 +1,6 @@
-import ProductForm from "@/components/Product/ProductForm/ProductForm";
+import CreateProductForm from "@/components/Product/ProductForm/CreateProductForm";
 import React from "react";
 
 export default function page() {
-  return <ProductForm status="create" />;
+  return <CreateProductForm />;
 }

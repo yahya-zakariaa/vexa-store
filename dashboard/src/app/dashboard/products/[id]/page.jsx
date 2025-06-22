@@ -4,5 +4,5 @@ import React from "react";
 export default async function page({ params }) {
   const { id } = await params;
 
-  return <UpdateProductForm  productId={id} />;
+  return <UpdateProductForm productId={id} />;
 }

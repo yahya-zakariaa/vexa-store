@@ -1,293 +1,129 @@
-"use client";
+import TableBody from "./TableBody";
 import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SidebarMenuButton, useSidebar } from "@/components/ui/sidebar";
-
-import { toast } from "sonner";
-import Image from "next/image";
-export default function ProductTable({ products }) {
-  const { isMobile } = useSidebar();
-
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+export default function ProductTable() {
   return (
     <div className="flex flex-col items-center justify-center w-full gap-3 ">
-      <div className="header grid min-[1200px]:grid-cols-10 grid-cols-6  place-items-center w-full bg-gray-100 shadow rounded-md px-5 py-5">
-        <div className="col w-full h-full min-[1200px]:flex hidden items-center justify-start">Image</div>
-        <div className="col w-full h-full col-span-2 flex items-center justify-start  ">Name</div>
-        <div className="col w-full h-full  min-[1200px]:flex hidden  items-center justify-start">Category</div>
-        <div className="col w-full h-full flex items-center justify-center">Price</div>
-        <div className="col w-full h-full flex items-center justify-center">Stock</div>
-        <div className="col w-full h-full flex items-center justify-center"> Sold</div>
-        <div className="col w-full h-full  min-[1200px]:flex hidden items-center justify-end  md:col-start-9">Status</div>
-        <div className="col w-full h-full flex items-center justify-end  md:col-start-10">Actions</div>
-      </div>
-
-      {Array.isArray(products) &&
-        products?.map((product) => (
-          <div className="row grid min-[1200px]:grid-cols-10 grid-cols-6 place-items-center w-full min-h-[90px] bg-gray-100 shadow rounded-md px-3 py-2">
-            <div className="col w-full h-full min-[1200px]:flex hidden items-center justify-start">
-              <Image
-                className="rounded object-cover"
-                alt={"none"}
-                src={product.images[0]}
-                width={50}
-                height={50}
+      <div className="searchBar w-full flex items-center justify-start gap-6 ">
+        <input
+          type="text"
+          placeholder="search"
+          className="flex-1 min-w-[50%] px-3 py-2.5 bg-slate-100 border border-gray-300 rounded-md"
+        />
+        <div className="filters flex items-center justify-center gap-4 max-w-[40%]">
+          <Select
+            // name="category"
+            // disabled={!isEditable}
+            // onValueChange={(value) => formik.setFieldValue("category", value)}
+            // onBlur={formik.handleBlur}
+            value={""}
+          >
+            <SelectTrigger
+              className={`max-w-[300px] shadow-none w-[50%] bg-slate-100 border border-gray-300 py-2.5 `}
+            >
+              <SelectValue
+                className="placeholder:text-black text-black"
+                placeholder="Filter"
               />
-            </div>
-            <div className="col w-full h-full col-span-2 flex items-center justify-start min-[500px]:text-[16px]  text-[14px] ">
-              {product.name}
-            </div>
-            <div className="col w-full h-full  min-[1200px]:flex hidden  items-center justify-start">{product.category.name}</div>
-            <div className="col w-full h-full flex items-center justify-center min-[500px]:text-[16px]  text-[14px]">{product.totalPrice} EGP</div>
-            <div className="col w-full h-full flex items-center justify-center min-[500px]:text-[16px]  text-[14px]">{product.stock}</div>
-            <div className="col w-full h-full flex items-center justify-center min-[500px]:text-[16px]  text-[14px]">{product.totalSold}</div>
-            <div className="col w-full h-full  min-[1200px]:flex hidden items-center justify-end  md:col-start-9">
-              <div className="toggler ">
-                <input
-                  id={`toggler-${product._id}`}
-                  name={`toggler-${product._id}`}
-                  type="checkbox"
-                  defaultChecked={product?.availability}
-                  value={"0"}
-                />
-                <label htmlFor={`toggler-${product._id}`}>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel className="flex items-center">
                   <svg
-                    className="toggler-on"
-                    version="0.5"
                     xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 130.2 130.2"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 16 16"
                   >
-                    <polyline
-                      className="path check"
-                      points="100.2,40.2 51.5,88.8 29.8,67.5"
-                    ></polyline>
+                    <path
+                      fill="currentColor"
+                      fillRule="evenodd"
+                      d="M15 2v1.67l-5 4.759V14H6V8.429l-5-4.76V2zM7 8v5h2V8l5-4.76V3H2v.24z"
+                      clipRule="evenodd"
+                    />
                   </svg>
+                  <span className="mt-[-3px]">Filter</span>
+                </SelectLabel>
+                <SelectItem value="Product">Product name</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Select
+            // name="category"
+            // disabled={!isEditable}
+            // onValueChange={(value) => formik.setFieldValue("category", value)}
+            // onBlur={formik.handleBlur}
+            value={""}
+          >
+            <SelectTrigger
+              className={`max-w-[300px] shadow-none w-[50%] py-2.5 bg-slate-100 border border-gray-300 `}
+            >
+              <SelectValue
+                className="placeholder:text-black text-black"
+                placeholder="Sort"
+              />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel className="flex items-center gap-1">
                   <svg
-                    className="toggler-off"
-                    version="0.5"
                     xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 130.2 130.2"
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
                   >
-                    <line
-                      className="path line"
-                      x1="34.4"
-                      y1="34.4"
-                      x2="95.8"
-                      y2="95.8"
-                    ></line>
-                    <line
-                      className="path line"
-                      x1="95.8"
-                      y1="34.4"
-                      x2="34.4"
-                      y2="95.8"
-                    ></line>
+                    <path
+                      fill="currentColor"
+                      d="M16.29 14.29L12 18.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l5 5a1 1 0 0 0 1.42 0l5-5a1 1 0 0 0-1.42-1.42M7.71 9.71L12 5.41l4.29 4.3a1 1 0 0 0 1.42 0a1 1 0 0 0 0-1.42l-5-5a1 1 0 0 0-1.42 0l-5 5a1 1 0 0 0 1.42 1.42"
+                    />
                   </svg>
-                </label>
-              </div>
-            </div>
-            <div className="col w-full h-full flex items-center justify-end  md:col-start-10 pe-4">
-              <DropdownMenu className="h-full">
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton
-                    size="sm"
-                    className="data-[state=open]:bg-sidebar-accent hover:bg-transparent w-fit h-full data-[state=open]:text-sidebar-accent-foreground"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0-2 0m0 7a1 1 0 1 0 2 0a1 1 0 1 0-2 0m0-14a1 1 0 1 0 2 0a1 1 0 1 0-2 0"
-                      />
-                    </svg>
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  className="mt-5 me-2  rounded-lg"
-                  side={isMobile ? "bottom" : "left"}
-                  align="start"
-                  sideOffset={1}
-                >
-                  <DropdownMenuGroup>
-                    <DropdownMenuItem>Veiw</DropdownMenuItem>
-                    <DropdownMenuItem>Edit</DropdownMenuItem>
-                  </DropdownMenuGroup>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem className="text-red-500 font-medium [hover]:text-red-500 flex items-center">
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        ))}
+                  <span className="mt-[-3px]">sort</span>
+                </SelectLabel>
+                <SelectItem value="Product">A-Z</SelectItem>
+                <SelectItem value="Product">Z-A</SelectItem>
+                <SelectItem value="Product">High price</SelectItem>
+                <SelectItem value="Product">Low price</SelectItem>
+                <SelectItem value="Product">High stock</SelectItem>
+                <SelectItem value="Product">Low stock</SelectItem>
+                <SelectItem value="Product">Availibale</SelectItem>
+                <SelectItem value="Product">Unavailibale</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="header grid min-[1200px]:grid-cols-9 grid-cols-5  place-items-center w-full bg-slate-100 shadow rounded-md px-5 py-5">
+        <div className="col w-full h-full min-[1200px]:flex hidden items-center justify-start">
+          Image
+        </div>
+        <div className="col w-full h-full col-span-2 flex items-center justify-start  ">
+          Name
+        </div>
+        <div className="col w-full h-full  min-[1200px]:flex hidden  items-center justify-start">
+          Category
+        </div>
+        <div className="col w-full h-full flex items-center justify-center">
+          Price
+        </div>
+        <div className="col w-full h-full flex items-center justify-center ms-16">
+          Stock
+        </div>
+
+        <div className="col w-full h-full  min-[1200px]:flex hidden items-center justify-end  md:col-start-8">
+          Availability
+        </div>
+        <div className="col w-full h-full flex items-center justify-end  md:col-start-9">
+          Actions
+        </div>
+      </div>
+      <TableBody />
     </div>
   );
 }
-
-// <Table className={"rounded-xl bg-gray-100"}>
-//   <TableCaption>A list of Products.</TableCaption>
-//   <TableHeader className={"py-10"}>
-//     <TableRow>
-//       <TableHead className="w-[100px]  text-center max-[1000px]:hidden">
-//         Image
-//       </TableHead>
-//       <TableHead className="w-[500px]  text-center">Name</TableHead>
-//       <TableHead className="text-center w-[200px]  max-[1000px]:hidden">
-//         Category
-//       </TableHead>
-//       <TableHead className="text-center min-[1200px]:w-[150px] w-[350px]  ">
-//         Price
-//       </TableHead>
-//       <TableHead className="max-[1000px]:w-[150px]  text-center">
-//         Stock
-//       </TableHead>
-//       <TableHead className="text-center max-[1000px]:w-[150px]  ">
-//         Total Sold
-//       </TableHead>
-//       <TableHead className=" text-center min-[1200px]:ps-[100px] w-[500px]">
-//         Status
-//       </TableHead>
-//       <TableHead className="text-right pe-13 w-[200px]">Actions</TableHead>
-//     </TableRow>
-//   </TableHeader>
-//   <TableBody className="w-full">
-//     {Array.isArray(products) &&
-//       products?.map((product) => (
-//         <TableRow className="w-full" key={product._id}>
-//           <TableCell className=" text-center font-medium ps-7 max-[1000px]:hidden">
-//             <Image
-//               className="rounded object-cover"
-//               alt={product.name}
-//               src={product.images[0]}
-//               width={50}
-//               height={50}
-//             />
-//           </TableCell>
-//           <TableCell className="text-center font-medium ">
-//             {product.name}
-//           </TableCell>
-//           <TableCell className="tracking-widest font-medium text-center max-[1000px]:hidden">
-//             {product.category.name}
-//           </TableCell>
-//           <TableCell className="text-center text-green-500 font-bold">
-//             {product.totalPrice}
-//           </TableCell>
-//           <TableCell className="text-center font-medium">
-//             {product.stock}
-//           </TableCell>
-//           <TableCell className="text-center font-medium">
-//             {product.totalSold}
-//           </TableCell>
-//           <TableCell className=" ps-[95px] w-[200px]">
-//             <div className="toggler ">
-//               <input
-//                 id={`toggler-${product._id}`}
-//                 name={`toggler-${product._id}`}
-//                 type="checkbox"
-//                 defaultChecked={product?.availability}
-//                 value={"0"}
-//               />
-//               <label htmlFor={`toggler-${product._id}`}>
-//                 <svg
-//                   className="toggler-on"
-//                   version="0.5"
-//                   xmlns="http://www.w3.org/2000/svg"
-//                   viewBox="0 0 130.2 130.2"
-//                 >
-//                   <polyline
-//                     className="path check"
-//                     points="100.2,40.2 51.5,88.8 29.8,67.5"
-//                   ></polyline>
-//                 </svg>
-//                 <svg
-//                   className="toggler-off"
-//                   version="0.5"
-//                   xmlns="http://www.w3.org/2000/svg"
-//                   viewBox="0 0 130.2 130.2"
-//                 >
-//                   <line
-//                     className="path line"
-//                     x1="34.4"
-//                     y1="34.4"
-//                     x2="95.8"
-//                     y2="95.8"
-//                   ></line>
-//                   <line
-//                     className="path line"
-//                     x1="95.8"
-//                     y1="34.4"
-//                     x2="34.4"
-//                     y2="95.8"
-//                   ></line>
-//                 </svg>
-//               </label>
-//             </div>
-//           </TableCell>
-//           <TableCell className=" text-end   ps-[80px] h-full ">
-//             <DropdownMenu className="h-full">
-//               <DropdownMenuTrigger asChild>
-//                 <SidebarMenuButton
-//                   size="sm"
-//                   className="data-[state=open]:bg-sidebar-accent hover:bg-transparent w-fit h-full data-[state=open]:text-sidebar-accent-foreground"
-//                 >
-//                   <svg
-//                     xmlns="http://www.w3.org/2000/svg"
-//                     width="24"
-//                     height="24"
-//                     viewBox="0 0 24 24"
-//                   >
-//                     <path
-//                       fill="none"
-//                       stroke="currentColor"
-//                       strokeLinecap="round"
-//                       strokeLinejoin="round"
-//                       strokeWidth="2"
-//                       d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0-2 0m0 7a1 1 0 1 0 2 0a1 1 0 1 0-2 0m0-14a1 1 0 1 0 2 0a1 1 0 1 0-2 0"
-//                     />
-//                   </svg>
-//                 </SidebarMenuButton>
-//               </DropdownMenuTrigger>
-//               <DropdownMenuContent
-//                 className="mt-5 me-2  rounded-lg"
-//                 side={isMobile ? "bottom" : "left"}
-//                 align="start"
-//                 sideOffset={1}
-//               >
-//                 <DropdownMenuGroup>
-//                   <DropdownMenuItem>Veiw</DropdownMenuItem>
-//                   <DropdownMenuItem>Edit</DropdownMenuItem>
-//                 </DropdownMenuGroup>
-//                 <DropdownMenuSeparator />
-//                 <DropdownMenuItem className="text-red-500 font-medium [hover]:text-red-500 flex items-center">
-//                   Delete
-//                 </DropdownMenuItem>
-//               </DropdownMenuContent>
-//             </DropdownMenu>
-//           </TableCell>
-//         </TableRow>
-//       ))}
-//   </TableBody>
-// </Table>
