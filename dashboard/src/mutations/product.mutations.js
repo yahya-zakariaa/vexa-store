@@ -73,7 +73,7 @@ export const useUpdateProduct = () => {
         if (!(formData instanceof FormData)) {
           throw new Error("Something went wrong while building the form data!");
         }
-
+        console.log(formData);
         const res = await axiosInstance.patch(
           `/dashboard/products/${productId}`,
           formData,
@@ -85,11 +85,20 @@ export const useUpdateProduct = () => {
         );
         return res.data;
       }
+      console.log(data);
       const formData = new FormData();
-      Object.entries(data).forEach(([k, v]) => {
-        formData.append(k, v);
+      Object.keys(data).forEach((k) => {
+        if (k === "sizes") {
+          if (Array.isArray(data[k])) {
+            data[k].forEach((size) => formData.append("sizes[]", size));
+          } else {
+            throw new Error("Sizes must be an array");
+          }
+        } else if (k !== "images") {
+          formData.append(k, data[k]);
+        }
       });
-
+      console.log(formData);
       const res = await axiosInstance.patch(
         `/dashboard/products/${productId}`,
         formData,

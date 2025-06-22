@@ -185,7 +185,7 @@ export default function UpdateProductForm({ productId }) {
         toast.error("You haven't changed anything");
         return;
       }
-
+      
       await updateProduct({ productId, data: updatedFields });
 
       initialImagesRef.current = images;

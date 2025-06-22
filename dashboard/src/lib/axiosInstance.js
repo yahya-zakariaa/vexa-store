@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "sonner";
 
 const axiosInstance = axios.create({
-  baseURL: "https://vexa-dashboard-production.up.railway.app/api",
+   baseURL:"http://localhost:3001/api" ,//"https://vexa-dashboard-production.up.railway.app/api"
   withCredentials: true,
 });
 
