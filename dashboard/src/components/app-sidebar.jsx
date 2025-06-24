@@ -8,6 +8,7 @@ import {
   BadgePercent,
   Settings2,
   Shirt,
+  ChartColumnStacked,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -35,8 +36,24 @@ const data = {
           url: "/dashboard/products",
         },
         {
-          title: "Create Product",
+          title: "New Product",
           url: "/dashboard/products/create-product",
+        },
+      ],
+    },
+    {
+      title: "Categories",
+      url: "#",
+      icon: ChartColumnStacked,
+      isActive: false,
+      items: [
+        {
+          title: "Veiw Categories",
+          url: "/dashboard/categories",
+        },
+        {
+          title: "New Category",
+          url: "/dashboard/categories/create-category",
         },
       ],
     },

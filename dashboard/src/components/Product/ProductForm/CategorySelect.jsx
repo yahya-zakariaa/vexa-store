@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CategoryDialog } from "@/components/CategoryDialog";
+import { CategoryDialog } from "@/components/Category/CategoryDialog";
 
 export default function CategorySelect({ formik, isEditable }) {
   return (

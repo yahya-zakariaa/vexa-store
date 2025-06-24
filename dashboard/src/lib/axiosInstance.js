@@ -2,7 +2,7 @@ import axios from "axios";
 import { toast } from "sonner";
 
 const axiosInstance = axios.create({
-   baseURL:"http://localhost:3001/api" ,//"https://vexa-dashboard-production.up.railway.app/api"
+  baseURL: "http://localhost:3001/api", //"https://vexa-dashboard-production.up.railway.app/api"
   withCredentials: true,
 });
 
@@ -18,6 +18,12 @@ axiosInstance.interceptors.response.use(
     }
     if (error?.response?.data?.message?.includes("buffering timed out")) {
       return toast.error("Server connection time out");
+    }
+    if (error?.response?.status === 401) {
+      toast.error("Please login again", {
+        description: error.response.data.message,
+      });
+      window.location.href = "/";
     }
 
     return Promise.reject(error.response);

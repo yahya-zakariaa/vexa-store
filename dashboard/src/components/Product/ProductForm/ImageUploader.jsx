@@ -5,7 +5,7 @@ import { useDropzone } from "react-dropzone";
 export default function ImageUploader({ images, setImages, isEditable }) {
   const onDrop = useCallback(
     (acceptedFiles) => {
-      if (!isEditable) return; // منع رفع الصور لو مش editable
+      if (!isEditable) return; 
       const newImages = acceptedFiles.map((file) => ({
         file,
         preview: URL.createObjectURL(file),
@@ -21,7 +21,7 @@ export default function ImageUploader({ images, setImages, isEditable }) {
     onDrop,
     accept: { "image/*": [] },
     multiple: true,
-    disabled: !isEditable, // تعطيل كامل للـ Dropzone
+    disabled: !isEditable, 
   });
 
   const removeImage = (index) => {
@@ -33,11 +33,11 @@ export default function ImageUploader({ images, setImages, isEditable }) {
     });
   };
 
-  useEffect(() => {
-    return () => {
-      images?.forEach((img) => URL.revokeObjectURL(img.preview));
-    };
-  }, [images]);
+  // useEffect(() => {
+  //   return () => {
+  //     images?.forEach((img) => URL.revokeObjectURL(img.preview));
+  //   };
+  // }, [images]);
 
   return (
     <div className="container flex-col bg-gray-100 w-full h-fit rounded-md p-4">
@@ -47,7 +47,7 @@ export default function ImageUploader({ images, setImages, isEditable }) {
 
       <div
         {...getRootProps()}
-        className={`w-full h-[170px] border-2 border-dashed border-gray-400 flex items-center justify-center rounded-lg ${
+        className={`w-full h-[170px] border-2 border-dashed border-gray-400 text-center md:px-5 px-2 flex items-center justify-center rounded-lg ${
           isEditable ? "cursor-pointer" : "opacity-50 cursor-not-allowed"
         }`}
       >
@@ -55,7 +55,7 @@ export default function ImageUploader({ images, setImages, isEditable }) {
         {isDragActive ? (
           <p>Drop the image here ...</p>
         ) : (
-          <p>Drag and drop an image here, or click to select one</p>
+          <p>Drag and drop an image here,<br></br> or click to select one</p>
         )}
       </div>
 
