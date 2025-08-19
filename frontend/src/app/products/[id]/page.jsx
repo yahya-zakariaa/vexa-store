@@ -37,7 +37,7 @@ export default function page() {
   return (
     <section>
       <div className="container md:px-10 px-5 w-full flex items-start justify-center mx-auto">
-        <div className="product w-full flex md:flex-row flex-col items-start justify-between  mt-[100px] gap-5 md:gap-10">
+        <div className="product w-full flex md:flex-row flex-col items-start justify-between mt-[100px]  md:mt-[130px] gap-5 md:gap-10">
           <div className="image w-full md:w-[50%] bg-white rounded-lg overflow-hidden">
             <ImagesSlider imgs={product?.images} navigation={true} />
           </div>

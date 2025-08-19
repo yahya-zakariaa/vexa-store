@@ -10,8 +10,9 @@ const unProtectedRoutes = [
   "/account/create",
   "/account/recovery",
   "/account/recovery/reset-password",
-  "/products",
 ];
+
+const unVesableNavRoutes = ["products/[id]"];
 
 const navLinks = [
   { title: "HOME", href: "/" },
@@ -26,18 +27,19 @@ export default function Navbar() {
   const pathname = usePathname();
   const [atTop, setAtTop] = useState(true);
   const [navbarVisible, setNavbarVisible] = useState(true);
-  const [showBottom, setShowBottom] = useState(true);
+  const [showBottom, setShowBottom] = useState(false);
   const [showBottomManual, setShowBottomManual] = useState(false);
+  const isProductPage = /^\/products\/[^/]+$/.test(pathname);
   const lastScrollY = useRef(0);
 
   const handleScroll = () => {
     const currentScrollY = window.scrollY;
-
-    // عند أعلى الصفحة
-    if (currentScrollY < 50) {
+    if (currentScrollY < 20) {
       setAtTop(true);
       setNavbarVisible(true);
-      setShowBottom(true);
+      if (!isProductPage) {
+        setShowBottom(true);
+      }
       return;
     }
 
@@ -54,6 +56,11 @@ export default function Navbar() {
 
   useEffect(() => {
     lastScrollY.current = window.scrollY;
+    if (isProductPage) {
+      setShowBottom(false);
+    } else {
+      setShowBottom(true);
+    }
 
     window.addEventListener("scroll", handleScroll);
 
@@ -69,10 +76,10 @@ export default function Navbar() {
       className={`w-full fixed z-[9999] left-0 main-navbar ${
         navbarVisible ? "top-0" : "top-[-300px]"
       } transition-all duration-500 ease-in-out ${
-        !atTop ? "shadow-lg dark:shadow-white/5 bg-black" : ""
+        !atTop ? "shadow-md bg-white shadow-black/10  dark:bg-black" : ""
       }`}
     >
-      {atTop && (
+      {atTop && !isProductPage && (
         <Marquee
           className="py-2.5 bg-white dark:bg-black"
           pauseOnHover={true}
@@ -96,33 +103,34 @@ export default function Navbar() {
         <div className="container lg:flex flex-col hidden gap-5 w-full items-center justify-center py-2 mx-auto">
           <div className="top flex justify-between w-full items-center">
             <div className="flex items-center justify-start gap-5 w-[100px] flex-0">
-              {!atTop && (
-                <button
-                  onClick={() => {
-                    setShowBottomManual(!showBottomManual);
-                    setShowBottom(!showBottom);
-                  }}
-                  className="dark:text-[#eee] text-[#111] hover:text-gray-500 dark:hover:text-gray-300 transition-all"
-                  aria-label="Toggle menu"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    className="fill-current"
+              {(!atTop && !isProductPage) ||
+                (isProductPage && (
+                  <button
+                    onClick={() => {
+                      setShowBottomManual(!showBottomManual);
+                      setShowBottom(!showBottom);
+                    }}
+                    className="dark:text-[#eee] text-[#111] hover:text-gray-500 dark:hover:text-gray-300 transition-all"
+                    aria-label="Toggle menu"
                   >
-                    <path
-                      fill="none"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M10 6h10M4 12h16M7 12h13M4 18h10"
-                    />
-                  </svg>
-                </button>
-              )}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      className="fill-current"
+                    >
+                      <path
+                        fill="none"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M10 6h10M4 12h16M7 12h13M4 18h10"
+                      />
+                    </svg>
+                  </button>
+                ))}
 
               <Link
                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all"
@@ -203,7 +211,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          {(showBottomManual || atTop) && (
+          {(showBottomManual || (atTop && !isProductPage)) && (
             <div className="bottom w-full mb-2">
               <div className="links lg:flex hidden items-center justify-center mx-auto">
                 <ul className="flex justify-start items-center gap-8 w-fit">
