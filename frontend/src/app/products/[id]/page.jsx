@@ -61,7 +61,9 @@ export default function page() {
                   <SelectGroup>
                     <SelectLabel>Sizes</SelectLabel>
                     {product?.sizes.map((s, i) => (
-                      <SelectItem value={s}>{s}</SelectItem>
+                      <SelectItem value={s} key={i}>
+                        {s}
+                      </SelectItem>
                     ))}
                   </SelectGroup>
                 </SelectContent>

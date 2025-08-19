@@ -1,14 +1,11 @@
 "use client";
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import ramadan_bannar from "../../../../public/assets/sliders/ramadan-bannar.jpg";
-import ramadan_bannar_mobile from "../../../../public/assets/sliders/ramadan-bannar-mobile.jpg";
-
+import { EffectFade, Autoplay } from "swiper/modules";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/effect-fade";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
+
 import Image from "next/image";
 
 export default function Hero() {
@@ -16,9 +13,15 @@ export default function Hero() {
     <>
       <section className="slider-container  w-full h-screen flex place-center items-center">
         <Swiper
-          effect="fade"
+          modules={[EffectFade, Autoplay]}
+          effect={"fade"}
           speed={200}
-          className="mySwiper w-full  mt-9 h-[94.8%]  overflow-hidden"
+          loop={true}
+          autoplay={{
+            delay: 5000,
+            disableOnInteraction: false,
+          }}
+          className="mySwiper w-full h-[full]  overflow-hidden"
         >
           <SwiperSlide>
             <div className="w-full h-full relative">
@@ -28,24 +31,27 @@ export default function Hero() {
                 </button>
               </div>
               <Image
-                className="w-full h-full md:inline-block hidden object-cover cursor-grab image-slides relative object-top "
-                src={ramadan_bannar}
-                quality={100}
-                priority
-                sizes="150vw"
-                width={100}
-                height={100}
-                alt={"bannar"}
+                className="w-full h-full object-cover object-top"
+                src={"/main-section/video1-pc.webp"}
+                alt="Hero Image"
+                width={2000}
+                height={1000}
               />
+            </div>
+          </SwiperSlide>
+          <SwiperSlide>
+            <div className="w-full h-full relative">
+              <div className="content absolute z-[222] top-[65%] translate-x-[-50%] left-[50%]">
+                <button className="bg-[#ccc] dark:bg-[#555] dark:text-white rounded-full px-5 py-2 font-bold">
+                  SHOP NOW !!
+                </button>
+              </div>
               <Image
-                className="w-full h-full md:hidden inline-block object-cover cursor-grab image-slides relative object-middle  "
-                src={ramadan_bannar_mobile}
-                quality={100}
-                priority
-                sizes="150vw"
-                width={100}
-                height={100}
-                alt={"bannar"}
+                className="w-full h-full object-cover object-top"
+                src={"/main-section/video2-pc.gif"}
+                alt="Hero Image"
+                width={2000}
+                height={1000}
               />
             </div>
           </SwiperSlide>

@@ -83,6 +83,7 @@ export default function ImagesSlider({
                 }`}
                 src={img}
                 onLoad={() => handleImageLoad(index)}
+                quality={100}
               />
             </div>
           </SwiperSlide>
