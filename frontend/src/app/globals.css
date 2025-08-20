@@ -11,7 +11,7 @@
   height: 0;
   background: #fff;
   z-index: -1;
-  transition: all 0.5s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .main-navbar:hover::after {
@@ -19,7 +19,7 @@
 }
 
 html.dark .main-navbar::after {
-  background-color: #000;
+  background-color: #09090b;
 }
 
 html .swiper-pagination-bullet {

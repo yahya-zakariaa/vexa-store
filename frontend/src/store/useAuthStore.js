@@ -7,11 +7,12 @@ const useAuthStore = create((set, get) => ({
       const res = await axiosInstance.post("/auth/signup", data);
       toast.success("Account created successfully");
     } catch (error) {
+      console.log(error);
+
       toast.error(
-        error.response?.data?.message ||
-          "Something went wrong. Please try again."
+        error?.data?.message || "Something went wrong. Please try again."
       );
-      throw new Error(error.response?.data?.message || "Unknown error");
+      throw new Error(error?.data?.message || "Unknown error");
     }
   },
   login: async (data) => {
@@ -22,9 +23,9 @@ const useAuthStore = create((set, get) => ({
     } catch (error) {
       console.log(error);
       toast.error(
-        error.response.data.message || "Something went wrong. Please try again."
+        error.data.message || "Something went wrong. Please try again."
       );
-      throw new Error(error.response.data.message);
+      throw new Error(error.data.message);
     }
   },
   sendOTP: async (data) => {
@@ -33,15 +34,14 @@ const useAuthStore = create((set, get) => ({
       console.log(res);
       toast.success(res.data.message || "OTP sent successfully.");
     } catch (error) {
-      if (error.response?.status === 429) {
-        toast.warning(error.response.data.message || "Too many attempts.");
-        throw new Error(error.response.data.message);
+      if (error?.status === 429) {
+        toast.warning(error.data.message || "Too many attempts.");
+        throw new Error(error.data.message);
       }
       toast.error(
-        error.response?.data?.message ||
-          "Something went wrong. Please try again."
+        error?.data?.message || "Something went wrong. Please try again."
       );
-      throw new Error(error.response?.data?.message || "Unknown error");
+      throw new Error(error?.data?.message || "Unknown error");
     }
   },
   verifyOTP: async (data) => {
@@ -50,15 +50,14 @@ const useAuthStore = create((set, get) => ({
       console.log(res);
       toast.success(res.data.message || "OTP verified successfully.");
     } catch (error) {
-      if (error.response?.status === 429) {
-        toast.warning(error.response.data.message || "Too many attempts.");
-        throw new Error(error.response.data.message);
+      if (error?.status === 429) {
+        toast.warning(error.data.message || "Too many attempts.");
+        throw new Error(error.data.message);
       }
       toast.error(
-        error.response?.data?.message ||
-          "Something went wrong. Please try again."
+        error?.data?.message || "Something went wrong. Please try again."
       );
-      throw new Error(error.response?.data?.message || "Unknown error");
+      throw new Error(error?.data?.message || "Unknown error");
     }
   },
   passwordRecovery: async (data) => {
@@ -70,12 +69,11 @@ const useAuthStore = create((set, get) => ({
       toast.success(res.data.message);
     } catch (error) {
       console.log(error);
-      
+
       toast.error(
-        error.response?.data?.message ||
-          "Something went wrong. Please try again."
+        error?.data?.message || "Something went wrong. Please try again."
       );
-      throw new Error(error.response?.data?.message || "Unknown error");
+      throw new Error(error?.data?.message || "Unknown error");
     }
   },
 }));

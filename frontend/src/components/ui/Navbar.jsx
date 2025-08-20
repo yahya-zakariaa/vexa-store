@@ -4,7 +4,20 @@ import Link from "next/link";
 import Marquee from "react-fast-marquee";
 import { usePathname } from "next/navigation";
 import ToggleMode from "./ToggleMode";
-
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { getCart } from "@/queries/cart.queries";
+import { useQuery } from "@tanstack/react-query";
+import { Minus, X, Plus, Search, Menu, User, ShoppingCart } from "lucide-react";
+import { Input } from "./input";
+import { useSearchProducts } from "@/mutations/product.mutations";
+import { useDebounce } from "use-debounce";
+import { toast } from "sonner";
 const unProtectedRoutes = [
   "/account/login",
   "/account/create",
@@ -12,7 +25,7 @@ const unProtectedRoutes = [
   "/account/recovery/reset-password",
 ];
 
-const unVesableNavRoutes = ["products/[id]"];
+const unVisibleNavRoutes = ["product", "collection", "collections"];
 
 const navLinks = [
   { title: "HOME", href: "/" },
@@ -23,21 +36,58 @@ const navLinks = [
   { title: "CONTACT US", href: "/contact" },
 ];
 
+const getPageType = (pathname) => {
+  if (/^\/collections\/[^/]+\/[^/]+\/?$/.test(pathname)) {
+    return "product";
+  } else if (/^\/collections\/[^/]+\/?$/.test(pathname)) {
+    return "collection";
+  } else if (/^\/collections\/?$/.test(pathname)) {
+    return "collections";
+  } else {
+    return "other";
+  }
+};
+
 export default function Navbar() {
   const pathname = usePathname();
   const [atTop, setAtTop] = useState(true);
   const [navbarVisible, setNavbarVisible] = useState(true);
   const [showBottom, setShowBottom] = useState(false);
   const [showBottomManual, setShowBottomManual] = useState(false);
-  const isProductPage = /^\/products\/[^/]+$/.test(pathname);
+  const pageType = getPageType(pathname);
+  const isNavBar = unVisibleNavRoutes.includes(pageType);
   const lastScrollY = useRef(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchedProducts, setSearchedProducts] = useState([]);
+  const [debouncedSearch] = useDebounce(searchQuery, 500);
+
+  const {
+    data: cart = { items: [], totalItems: 0, totalPrice: 0 },
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["cart"],
+    queryFn: () => getCart(),
+    onError: (error) => {
+      console.log("error from component:", error);
+      toast.error(
+        error?.message || "An error occurred while fetching products."
+      );
+    },
+    staleTime: 1000 * 60 * 5,
+    cacheTime: 1000 * 60 * 10,
+  });
+
+  const { mutate: searchProducts, isPending: isSearching } =
+    useSearchProducts();
 
   const handleScroll = () => {
     const currentScrollY = window.scrollY;
     if (currentScrollY < 20) {
       setAtTop(true);
       setNavbarVisible(true);
-      if (!isProductPage) {
+      if (!isNavBar) {
         setShowBottom(true);
       }
       return;
@@ -56,7 +106,7 @@ export default function Navbar() {
 
   useEffect(() => {
     lastScrollY.current = window.scrollY;
-    if (isProductPage) {
+    if (isNavBar) {
       setShowBottom(false);
     } else {
       setShowBottom(true);
@@ -67,7 +117,24 @@ export default function Navbar() {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [isNavBar]);
+
+  useEffect(() => {
+    if (debouncedSearch.trim()) {
+      searchProducts(debouncedSearch, {
+        onSuccess: (data) => {
+          console.log("Search results:", data);
+          setSearchedProducts(data || []);
+        },
+        onError: (error) => {
+          console.error("Error searching products:", error);
+          toast.error("Failed to search products");
+        },
+      });
+    } else {
+      setSearchedProducts([]);
+    }
+  }, [debouncedSearch, searchProducts]);
 
   if (unProtectedRoutes.includes(pathname)) return null;
 
@@ -76,12 +143,14 @@ export default function Navbar() {
       className={`w-full fixed z-[9999] left-0 main-navbar ${
         navbarVisible ? "top-0" : "top-[-300px]"
       } transition-all duration-500 ease-in-out ${
-        !atTop ? "shadow-md bg-white shadow-black/10  dark:bg-black" : ""
+        !atTop
+          ? "shadow-lg bg-white shadow-black/10 dark:shadow-black/30  dark:bg-[#09090B]"
+          : ""
       }`}
     >
-      {atTop && !isProductPage && (
+      {atTop && !isNavBar && (
         <Marquee
-          className="py-2.5 bg-white dark:bg-black"
+          className="py-2.5 bg-white dark:bg-[#09090b]"
           pauseOnHover={true}
           speed={80}
         >
@@ -98,77 +167,96 @@ export default function Navbar() {
         </Marquee>
       )}
 
-      <div className="nav w-full ">
+      <div className="nav w-full">
         {/* Desktop Navigation */}
         <div className="container lg:flex flex-col hidden gap-5 w-full items-center justify-center py-2 mx-auto">
           <div className="top flex justify-between w-full items-center">
             <div className="flex items-center justify-start gap-5 w-[100px] flex-0">
-              {(!atTop && !isProductPage) ||
-                (isProductPage && (
-                  <button
-                    onClick={() => {
-                      setShowBottomManual(!showBottomManual);
-                      setShowBottom(!showBottom);
-                    }}
-                    className="dark:text-[#eee] text-[#111] hover:text-gray-500 dark:hover:text-gray-300 transition-all"
-                    aria-label="Toggle menu"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      className="fill-current"
-                    >
-                      <path
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M10 6h10M4 12h16M7 12h13M4 18h10"
-                      />
-                    </svg>
-                  </button>
-                ))}
+              {((!atTop && !isNavBar) || isNavBar) && (
+                <button
+                  onClick={() => {
+                    setShowBottomManual(!showBottomManual);
+                    setShowBottom(!showBottom);
+                  }}
+                  className="dark:text-[#eee] text-[#000] hover:text-gray-500 dark:hover:text-gray-300 transition-all"
+                  aria-label="Toggle menu"
+                >
+                  {showBottom ? <X size={24} /> : <Menu size={24} />}
+                </button>
+              )}
 
               <Link
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all"
+                className="p-2 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-all"
                 href={"/account/login"}
                 aria-label="Account"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  className="fill-current"
-                >
-                  <g fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <circle cx="12" cy="6" r="4" />
-                    <path d="M20 17.5c0 2.485 0 4.5-8 4.5s-8-2.015-8-4.5S7.582 13 12 13s8 2.015 8 4.5Z" />
-                  </g>
-                </svg>
+                <User size={24} />
               </Link>
 
-              <Link
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-all"
-                href={"/search"}
-                aria-label="Search"
+              <Sheet
+                onOpenChange={() => {
+                  setSearchQuery("");
+                  setSearchedProducts([]);
+                }}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  className="fill-current"
+                <SheetTrigger className="p-2 hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-all">
+                  <Search size={24} />
+                </SheetTrigger>
+                <SheetContent
+                  side="top"
+                  className="flex flex-col items-start justify-start "
                 >
-                  <path
-                    fill="currentColor"
-                    d="M9.5 16q-2.725 0-4.612-1.888T3 9.5t1.888-4.612T9.5 3t4.613 1.888T16 9.5q0 1.1-.35 2.075T14.7 13.3l5.6 5.6q.275.275.275.7t-.275.7t-.7.275t-.7-.275l-5.6-5.6q-.75.6-1.725.95T9.5 16m0-2q1.875 0 3.188-1.312T14 9.5t-1.312-3.187T9.5 5T6.313 6.313T5 9.5t1.313 3.188T9.5 14"
-                  />
-                </svg>
-              </Link>
+                  <SheetHeader className={"w-full"}>
+                    <SheetTitle className="flex border-b  w-full py-4 items-center">
+                      <h2 className="text-xl tracking-widest">SEARCH</h2>
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="py-5 w-full flex items-center justify-center">
+                    <div className="searchBar px-2 relative w-full flex items-center justify-center">
+                      <Input
+                        className="w-[100%]"
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search"
+                      />
+                      {searchQuery && (
+                        <button
+                          className="absolute right-[1.5%]"
+                          onClick={() => {
+                            setSearchQuery("");
+                            setSearchedProducts([]);
+                          }}
+                        >
+                          CLEAR
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  {isSearching && (
+                    <div className="w-full text-center py-4">Searching...</div>
+                  )}
+                  {searchedProducts.length > 0 && !isSearching && (
+                    <div className="w-full  pb-4">
+                      <h3 className="font-medium mb-2 px-2">
+                        Results ({searchedProducts.length})
+                      </h3>
+                      <div className="grid gap-2">
+                        {searchedProducts.map((product) => (
+                          <Link
+                            key={product.id}
+                            href={`/collections/${product.collection}/${product._id}`}
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded"
+                            onClick={() => setSearchQuery("")}
+                          >
+                            {product.name}
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </SheetContent>
+              </Sheet>
             </div>
 
             <Link
@@ -179,39 +267,98 @@ export default function Navbar() {
             </Link>
 
             <div className="flex items-center justify-end gap-5 w-[100px] flex-0">
-              <Link
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full relative transition-all"
-                href={"/cart"}
-                aria-label="Cart"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  className="fill-current"
-                >
-                  <path
-                    fill="none"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="1.5"
-                    d="M16.5 21a1.5 1.5 0 1 0 0-3a1.5 1.5 0 0 0 0 3m-8 0a1.5 1.5 0 1 0 0-3a1.5 1.5 0 0 0 0 3M3.71 5.4h15.214c1.378 0 2.373 1.27 1.995 2.548l-1.654 5.6C19.01 14.408 18.196 15 17.27 15H8.112c-.927 0-1.742-.593-1.996-1.452zm0 0L3 3"
-                  />
-                </svg>
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                  3
-                </span>
-              </Link>
-
-              <div className="flex items-center justify-center p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-all">
+              <Sheet>
+                <SheetTrigger className="p-2 relative hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-all">
+                  <ShoppingCart size={24} />
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cart?.totalItems || 0}
+                  </span>
+                </SheetTrigger>
+                <SheetContent className="flex flex-col items-start justify-start">
+                  <SheetHeader>
+                    <SheetTitle className="flex border-b px-6 py-4 w-full items-center">
+                      <span className="text-xl tracking-widest">CART</span>
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="body px-6 flex-1 divide-y divide-gray-300 dark:divide-white/20 flex flex-col items-center w-full overflow-auto max-h-[350px] py-3">
+                    {cart?.items?.length > 0 ? (
+                      cart.items.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-start w-full py-4"
+                        >
+                          <img
+                            src={item.images[0]}
+                            alt={item.name}
+                            className="w-20 h-20 object-cover rounded"
+                          />
+                          <div className="flex-1 ml-3 flex flex-col justify-between h-full">
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <h3 className="text-sm font-semibold">
+                                  {item.name}
+                                </h3>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                  Size: {item.size || "N/A"}
+                                </p>
+                              </div>
+                              <button className="text-gray-500 hover:text-gray-700">
+                                <X size={16} />
+                              </button>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center border rounded-md">
+                                <button className="p-1">
+                                  <Minus size={14} />
+                                </button>
+                                <span className="px-2 text-sm">
+                                  {item.quantity}
+                                </span>
+                                <button className="p-1">
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                              <span className="text-md font-medium">
+                                LE {item.price}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-center text-gray-500 py-8">
+                        Your cart is empty.
+                      </p>
+                    )}
+                  </div>
+                  {cart?.items?.length > 0 && (
+                    <div className="border-t px-6 py-4 w-full">
+                      <div className="flex justify-between items-center mb-4">
+                        <span className="font-medium">Subtotal:</span>
+                        <span className="font-medium">
+                          LE {cart?.totalPrice || 0}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-500 mb-4">
+                        Tax included. Shipping calculated at checkout.
+                      </p>
+                      <Link
+                        href="/checkout"
+                        className="block w-full text-center bg-black dark:bg-white text-white dark:text-black py-2.5 font-medium tracking-wider transition-all hover:opacity-90"
+                      >
+                        CHECK OUT
+                      </Link>
+                    </div>
+                  )}
+                </SheetContent>
+              </Sheet>
+              <div className="flex items-center justify-center p-2 rounded-full hover:bg-gray-200 dark:hover:bg-white/10 transition-all">
                 <ToggleMode />
               </div>
             </div>
           </div>
 
-          {(showBottomManual || (atTop && !isProductPage)) && (
+          {(showBottomManual || (atTop && !isNavBar)) && (
             <div className="bottom w-full mb-2">
               <div className="links lg:flex hidden items-center justify-center mx-auto">
                 <ul className="flex justify-start items-center gap-8 w-fit">
@@ -219,7 +366,7 @@ export default function Navbar() {
                     <li key={index}>
                       <Link
                         href={link.href}
-                        className="dark:text-[#eee] text-[#111] hover:text-gray-500 dark:hover:text-gray-300 transition-all font-medium tracking-wider text-sm uppercase py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                        className="dark:text-[#eee] text-[#000] transition-all duration-300 font-medium tracking-wider text-sm uppercase py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
                       >
                         {link.title}
                       </Link>
@@ -230,90 +377,199 @@ export default function Navbar() {
             </div>
           )}
         </div>
-
-        {/* Mobile Navigation */}
-        <div className="container lg:hidden flex gap-5 items-center justify-between py-3 px-2  rounded-full w-[90%] md:w-[80%] mx-auto  ">
-          <div className="menu flex items-center justify-start md:gap-5 gap-6 w-[100px] flex-0">
-            <button
-              className="dark:text-[#eee] text-[#111] hover:text-gray-500 dark:hover:text-gray-300 transition-all"
-              aria-label="Menu"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                className="fill-current"
+        <div className="container lg:hidden flex gap-5 items-center justify-between py-3 px-2 rounded-full w-[90%] md:w-[80%] mx-auto">
+          <div className="top flex items-center justify-between w-full">
+            <div className="menu flex items-center justify-start md:gap-5 gap-6 w-[100px] flex-0">
+              <button
+                onClick={() => setIsMobileMenuOpen(true)}
+                className="dark:text-[#eee] text-[#000] hover:text-gray-500 dark:hover:text-gray-300 transition-all"
+                aria-label="Menu"
               >
-                <path
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M10 6h10M4 12h16M7 12h13M4 18h10"
-                />
-              </svg>
-            </button>
+                <Menu size={24} />
+              </button>
 
-            <button
-              className="dark:text-[#eee] text-[#111] hover:text-gray-500 dark:hover:text-gray-300 transition-all"
-              aria-label="Search"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                className="fill-current"
+              <Sheet
+                onOpenChange={() => {
+                  setSearchQuery("");
+                  setSearchedProducts([]);
+                }}
               >
-                <path
-                  fill="currentColor"
-                  d="M9.5 16q-2.725 0-4.612-1.888T3 9.5t1.888-4.612T9.5 3t4.613 1.888T16 9.5q0 1.1-.35 2.075T14.7 13.3l5.6 5.6q.275.275.275.7t-.275.7t-.7.275t-.7-.275l-5.6-5.6q-.75.6-1.725.95T9.5 16m0-2q1.875 0 3.188-1.312T14 9.5t-1.312-3.187T9.5 5T6.313 6.313T5 9.5t1.313 3.188T9.5 14"
-                />
-              </svg>
-            </button>
-          </div>
+                <SheetTrigger className="dark:text-[#eee] text-[#000] hover:text-gray-500 dark:hover:text-gray-300 transition-all">
+                  <Search size={24} />
+                </SheetTrigger>
+                <SheetContent side="top">
+                  <SheetHeader>
+                    <SheetTitle className="border-b px-6 py-4">
+                      SEARCH
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="py-4">
+                    <Input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search "
+                      className="w-full "
+                    />
+                    {isSearching && (
+                      <div className="text-center py-4">Searching...</div>
+                    )}
+                    {searchedProducts.length > 0 && !isSearching && (
+                      <div className="mt-4">
+                        <h3 className="font-medium mb-3  ">
+                          Results ({searchedProducts.length})
+                        </h3>
+                        <div className="grid divide-y divide-gray-300 dark:divide-white/20 w-full">
+                          {searchedProducts.map((product) => (
+                            <Link
+                              key={product.id}
+                              href={`collections/${product.collection}/${product._id}`}
+                              className="px-2 py-4 hover:bg-gray-100 dark:hover:bg-white/10 "
+                              onClick={() => setSearchQuery("")}
+                            >
+                              {product.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
 
-          <Link
-            href="/"
-            className="md:text-[34px] text-[30px] max-[350px]:text-[25px] font-bold dark:text-[#eee] text-black tracking-widest"
-          >
-            VEXA
-          </Link>
-
-          <div className="cart-account flex items-center justify-end md:gap-5 gap-6 w-[100px] flex-0">
             <Link
-              className="dark:text-[#eee] text-[#111] hover:text-gray-500 dark:hover:text-gray-300 transition-all relative"
-              href={"/cart"}
-              aria-label="Cart"
+              href="/"
+              className="md:text-[34px] text-[30px] max-[350px]:text-[25px] font-bold dark:text-[#eee] text-black tracking-widest"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                className="fill-current"
-              >
-                <path
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
-                  d="M16.5 21a1.5 1.5 0 1 0 0-3a1.5 1.5 0 0 0 0 3m-8 0a1.5 1.5 0 1 0 0-3a1.5 1.5 0 0 0 0 3M3.71 5.4h15.214c1.378 0 2.373 1.27 1.995 2.548l-1.654 5.6C19.01 14.408 18.196 15 17.27 15H8.112c-.927 0-1.742-.593-1.996-1.452zm0 0L3 3"
-                />
-              </svg>
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                3
-              </span>
+              VEXA
             </Link>
 
-            <div className="dark:text-[#eee] text-[#111] hover:text-gray-500 dark:hover:text-gray-300 transition-all">
-              <ToggleMode />
+            <div className="cart-account flex items-center justify-end md:gap-5 gap-6 w-[100px] flex-0">
+              <Sheet>
+                <SheetTrigger className="p-2 relative hover:bg-gray-200 dark:hover:bg-white/10 rounded-full transition-all">
+                  <ShoppingCart size={24} />
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cart?.totalItems || 0}
+                  </span>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle className="border-b px-6 py-4">CART</SheetTitle>
+                  </SheetHeader>
+                  <div className="p-4 overflow-auto max-h-[60vh]">
+                    {cart?.items?.length > 0 ? (
+                      cart.items.map((item) => (
+                        <div
+                          key={item.id}
+                          className="flex items-start py-4 border-b"
+                        >
+                          <img
+                            src={item.images[0]}
+                            alt={item.name}
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                          <div className="flex-1 ml-3">
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <h3 className="text-sm font-semibold">
+                                  {item.name}
+                                </h3>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                  Size: {item.size || "N/A"}
+                                </p>
+                              </div>
+                              <button className="text-gray-500 hover:text-gray-700">
+                                <X size={16} />
+                              </button>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center border rounded-md">
+                                <button className="p-1">
+                                  <Minus size={14} />
+                                </button>
+                                <span className="px-2 text-sm">
+                                  {item.quantity}
+                                </span>
+                                <button className="p-1">
+                                  <Plus size={14} />
+                                </button>
+                              </div>
+                              <span className="text-md font-medium">
+                                LE {item.price}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-center text-gray-500 py-8">
+                        Your cart is empty.
+                      </p>
+                    )}
+                  </div>
+                  {cart?.items?.length > 0 && (
+                    <div className="border-t p-4">
+                      <div className="flex justify-between items-center mb-4">
+                        <span className="font-medium">Subtotal:</span>
+                        <span className="font-medium">
+                          LE {cart?.totalPrice || 0}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-500 mb-4">
+                        Tax included. Shipping calculated at checkout.
+                      </p>
+                      <Link
+                        href="/checkout"
+                        className="block w-full text-center bg-black dark:bg-white text-white dark:text-black py-2.5 font-medium tracking-wider transition-all hover:opacity-90"
+                      >
+                        CHECK OUT
+                      </Link>
+                    </div>
+                  )}
+                </SheetContent>
+              </Sheet>
+              <div className="dark:text-[#eee] text-[#000] hover:text-gray-500 dark:hover:text-gray-300 transition-all mt-1.5">
+                <ToggleMode />
+              </div>
             </div>
           </div>
         </div>
+        {/* Mobile Menu Sheet */}
+        <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+          <SheetContent side="left">
+            <SheetHeader>
+              <SheetTitle className="border-b px-6 py-4">MENU</SheetTitle>
+            </SheetHeader>
+            <div className="py-">
+              <ul className="divide-y divide-gray-300 dark:divide-white/20">
+                {navLinks.map((link, index) => (
+                  <li
+                    key={index}
+                    className=" hover:bg-gray-100 dark:hover:bg-white/10 transition-all"
+                  >
+                    <Link
+                      href={link.href}
+                      className="block py-4 px-2 text-lg font-medium "
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {link.title}
+                    </Link>
+                  </li>
+                ))}
+                <li>
+                  <Link
+                    href="/account/login"
+                    className="  py-4 px-2 text-lg font-medium flex gap-2 items-center "
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <User size={24} /> LOGIN
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </nav>
   );

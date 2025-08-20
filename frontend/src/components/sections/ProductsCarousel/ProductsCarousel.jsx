@@ -141,7 +141,10 @@ export default function ProductCarousel({ title, link, params, preView }) {
                 >
                   {products.map((product, i) => (
                     <SwiperSlide key={i}>
-                      <Link href={`/products/${product._id}`} className="product relative group cursor-pointer">
+                      <Link
+                        href={`collections/${params.collection}/${product._id}`}
+                        className="product relative group cursor-pointer"
+                      >
                         {product.onSale && (
                           <span className="absolute top-1.5 left-1.5 bg-[#111]  text-center px-5 py-1 text-[14px] tracking-widest font-medium rounded-md z-20 text-white">
                             SALE

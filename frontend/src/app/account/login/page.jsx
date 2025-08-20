@@ -48,17 +48,7 @@ export default function Page() {
     onSubmit: handleSubmit,
   });
   return (
-    <section className="signup overflow-hidden h-screen ">
-      {isNavigating && (
-        <div className="navigate px-20 py-14 flex items-center justify-center  rounded-lg backdrop-blur-md bg-[#d8d8d88c] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%] z-[2000] ">
-          <div className="message flex gap-5 items-center justify-center flex-col">
-            <span className="loginLoader"></span>
-            <span className="font-medium text-[18px]">
-              Warming up the engines
-            </span>
-          </div>
-        </div>
-      )}
+    <section className="login  ">
       <nav className="flex items-center   md:px-10 py-3 bg-[#eeeeee91] border-b border-[#ccc] backdrop-blur-md dark:bg-[#35353573] dark:border-[#9994] fixed w-full top-0 left-0 ">
         <div className="containerr flex items-center justify-between  w-[90%] md:w-full  mx-auto">
           <h1 className="text-[28px] font-bold tracking-wider">
@@ -68,7 +58,7 @@ export default function Page() {
           <ToggleMode />
         </div>
       </nav>
-      <div className="container w-[90%] flex items-center justify-center md:w-[50%]  mx-auto  min-h-screen pb-10 pt-20 md:pt-32 ">
+      <div className="container w-[90%] flex items-center justify-center md:w-[50%]  mx-auto  min-h-screen pt-16 ">
         <form
           action={"#"}
           onSubmit={formik.handleSubmit}
@@ -78,7 +68,7 @@ export default function Page() {
             <h2 className="text-start text-[1.7rem] mb-1 md:text-[2rem] font-bold   tracking-wide text-black dark:text-white">
               Login
             </h2>
-            <p className="font-normal text-[#555] dark:text-[#ffffffb6] text-lg">
+            <p className="font-normal text-[#333] dark:text-[#ffffffb6] text-lg">
               Don't have an account?{" "}
               <Link
                 href="/account/create"

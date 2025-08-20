@@ -7,8 +7,23 @@ import "swiper/css";
 import "swiper/css/effect-fade";
 
 import Image from "next/image";
+import { useState, useEffect } from "react";
 
+function useWindowWidth() {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  useEffect(() => {
+    const handleResize = () => setWidth(window.innerWidth);
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return width;
+}
 export default function Hero() {
+  const width = useWindowWidth();
   return (
     <>
       <section className="slider-container  w-full h-screen flex place-center items-center">
@@ -21,7 +36,7 @@ export default function Hero() {
             delay: 5000,
             disableOnInteraction: false,
           }}
-          className="mySwiper w-full h-[full]  overflow-hidden"
+          className="mySwiper w-full h-full  overflow-hidden"
         >
           <SwiperSlide>
             <div className="w-full h-full relative">
@@ -31,7 +46,7 @@ export default function Hero() {
                 </button>
               </div>
               <Image
-                className="w-full h-full object-cover object-top"
+                className="w-full h-full object-cover   object-[80%_20%]"
                 src={"/main-section/video1-pc.webp"}
                 alt="Hero Image"
                 width={2000}
@@ -47,8 +62,12 @@ export default function Hero() {
                 </button>
               </div>
               <Image
-                className="w-full h-full object-cover object-top"
-                src={"/main-section/video2-pc.gif"}
+                className=" w-full h-full object-cover   object-[80%_60%]"
+                src={
+                  width >= 1024
+                    ? "/main-section/video2-pc.gif"
+                    : "/main-section/video2-mobile.gif"
+                }
                 alt="Hero Image"
                 width={2000}
                 height={1000}
