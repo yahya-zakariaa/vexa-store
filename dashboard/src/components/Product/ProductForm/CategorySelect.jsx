@@ -55,7 +55,7 @@ export default function CategorySelect({ formik, isEditable }) {
               <SelectLabel>Categories</SelectLabel>
               {
                 categories && categories.map((c,i)=>(
-                  <SelectItem value={c.name}>{c.name}</SelectItem>
+                  <SelectItem key={i} value={c.name}>{c.name}</SelectItem>
                 ))
               }
             </SelectGroup>

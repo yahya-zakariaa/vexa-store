@@ -63,8 +63,8 @@ export default function GeneralInfo({ formik, isEditable }) {
             </p>
           </div>
           <ul className="items-center w-full flex gap-3 flex-wrap">
-            {sizesList.map((size) => (
-              <li key={size} className="flex">
+            {sizesList.map((size, i) => (
+              <li key={i} className="flex">
                 <input
                   type="checkbox"
                   id={size}
