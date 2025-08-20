@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <main className="">
       <Hero />
-      <section className="w-full my-5 overflow-hidden">
+      <section className="w-full my-5 flex items-center px-5 overflow-hidden">
         <ProductsCarousel
           preView={4}
           title={"NEW DROPS"}
@@ -17,7 +17,7 @@ export default function Home() {
         />
       </section>
       <DropHighlight />
-      <section className="w-full mt-16 overflow-hidden">
+      <section className="w-full px-5 flex items-center mt-16 overflow-hidden">
         <ProductsCarousel
           preView={4}
           title={"BEST DEALS"}

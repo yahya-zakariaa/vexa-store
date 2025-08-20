@@ -3,8 +3,8 @@ import Link from "next/link";
 import Marquee from "react-fast-marquee";
 export default function DropHighlight() {
   return (
-    <section className="w-full h-[100vh] relative">
-      <div className="content absolute w-[80%] h-[50%] left-[50%] top-[50%] translate-x-[-50%] flex items-center flex-col justify-start ">
+    <section className="w-full md:h-[100vh] relative ">
+      <div className="content absolute w-[100%] h-[100%] left-[0%] top-[0%]  flex items-center flex-col justify-center ">
         <h3 className="text-white font-bold md:text-[32px] text-[24px] mb-2 ">
           Unisex Drop. Wear it Your Way.
         </h3>
@@ -32,8 +32,9 @@ export default function DropHighlight() {
         </Link>
       </div>
       <video
+        aria-hidden="true"
         className="w-full h-full object-cover"
-        src={"/video.mp4"}
+        src={"./dropHighlight.mp4"}
         autoPlay
         muted
         loop

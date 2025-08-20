@@ -83,39 +83,46 @@ export default function Navbar() {
     useSearchProducts();
 
   const handleScroll = () => {
-    const currentScrollY = window.scrollY;
-    if (currentScrollY < 20) {
-      setAtTop(true);
-      setNavbarVisible(true);
-      if (!isNavBar) {
-        setShowBottom(true);
-      }
-      return;
-    }
-
-    setAtTop(false);
-    if (Math.abs(currentScrollY - lastScrollY.current) > 50) {
-      if (currentScrollY > lastScrollY.current) {
-        setNavbarVisible(false);
-      } else {
+    if (typeof window !== "undefined") {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY < 20) {
+        setAtTop(true);
         setNavbarVisible(true);
+        if (!isNavBar) {
+          setShowBottom(true);
+        }
+        return;
       }
-      lastScrollY.current = currentScrollY;
+
+      setAtTop(false);
+      if (Math.abs(currentScrollY - lastScrollY.current) > 50) {
+        if (currentScrollY > lastScrollY.current) {
+          setNavbarVisible(false);
+        } else {
+          setNavbarVisible(true);
+        }
+        lastScrollY.current = currentScrollY;
+      }
     }
   };
 
   useEffect(() => {
-    lastScrollY.current = window.scrollY;
-    if (isNavBar) {
-      setShowBottom(false);
-    } else {
-      setShowBottom(true);
+    if (typeof window !== "undefined") {
+      lastScrollY.current = window.scrollY;
+      if (isNavBar) {
+        setShowBottom(false);
+      } else {
+        setShowBottom(true);
+      }
+      if (typeof window !== "undefined") {
+        window.addEventListener("scroll", handleScroll);
+      }
     }
 
-    window.addEventListener("scroll", handleScroll);
-
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("scroll", handleScroll);
+      }
     };
   }, [isNavBar]);
 
@@ -220,22 +227,48 @@ export default function Navbar() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Search"
                       />
-                      {searchQuery && (
-                        <button
-                          className="absolute right-[1.5%]"
-                          onClick={() => {
-                            setSearchQuery("");
-                            setSearchedProducts([]);
-                          }}
-                        >
-                          CLEAR
-                        </button>
-                      )}
+                      {searchQuery &&
+                        (!isSearching ? (
+                          <button
+                            className="absolute right-[1.5%]"
+                            onClick={() => {
+                              setSearchQuery("");
+                              setSearchedProducts([]);
+                            }}
+                          >
+                            CLEAR
+                          </button>
+                        ) : (
+                          <span className="absolute right-[1.5%] text-gray-500">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-width="2"
+                                d="M12 6.99998C9.1747 6.99987 6.99997 9.24998 7 12C7.00003 14.55 9.02119 17 12 17C14.7712 17 17 14.75 17 12"
+                              >
+                                <animateTransform
+                                  attributeName="transform"
+                                  attributeType="XML"
+                                  dur="560ms"
+                                  from="0,12,12"
+                                  repeatCount="indefinite"
+                                  to="360,12,12"
+                                  type="rotate"
+                                />
+                              </path>
+                            </svg>
+                          </span>
+                        ))}
                     </div>
                   </div>
-                  {isSearching && (
-                    <div className="w-full text-center py-4">Searching...</div>
-                  )}
+
                   {searchedProducts.length > 0 && !isSearching && (
                     <div className="w-full  pb-4">
                       <h3 className="font-medium mb-2 px-2">
@@ -284,7 +317,7 @@ export default function Navbar() {
                     {cart?.items?.length > 0 ? (
                       cart.items.map((item) => (
                         <div
-                          key={item.id}
+                          key={item.productId}
                           className="flex items-start w-full py-4"
                         >
                           <img
@@ -404,16 +437,57 @@ export default function Navbar() {
                     </SheetTitle>
                   </SheetHeader>
                   <div className="py-4">
-                    <Input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Search "
-                      className="w-full "
-                    />
-                    {isSearching && (
-                      <div className="text-center py-4">Searching...</div>
-                    )}
+                    <div className="py-5 w-full flex items-center justify-center">
+                      <div className="searchBar  relative w-full flex items-center justify-center">
+                        <Input
+                          className="w-[100%]"
+                          type="text"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          placeholder="Search"
+                        />
+                        {searchQuery &&
+                          (!isSearching ? (
+                            <button
+                              className="absolute right-[3%] text-sm"
+                              onClick={() => {
+                                setSearchQuery("");
+                                setSearchedProducts([]);
+                              }}
+                            >
+                              CLEAR
+                            </button>
+                          ) : (
+                            <span className="absolute right-[3%] text-gray-500">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  fill="none"
+                                  stroke="currentColor"
+                                  stroke-linecap="round"
+                                  stroke-width="2"
+                                  d="M12 6.99998C9.1747 6.99987 6.99997 9.24998 7 12C7.00003 14.55 9.02119 17 12 17C14.7712 17 17 14.75 17 12"
+                                >
+                                  <animateTransform
+                                    attributeName="transform"
+                                    attributeType="XML"
+                                    dur="560ms"
+                                    from="0,12,12"
+                                    repeatCount="indefinite"
+                                    to="360,12,12"
+                                    type="rotate"
+                                  />
+                                </path>
+                              </svg>
+                            </span>
+                          ))}
+                      </div>
+                    </div>
+
                     {searchedProducts.length > 0 && !isSearching && (
                       <div className="mt-4">
                         <h3 className="font-medium mb-3  ">
@@ -461,7 +535,7 @@ export default function Navbar() {
                     {cart?.items?.length > 0 ? (
                       cart.items.map((item) => (
                         <div
-                          key={item.id}
+                          key={item.productId}
                           className="flex items-start py-4 border-b"
                         >
                           <img

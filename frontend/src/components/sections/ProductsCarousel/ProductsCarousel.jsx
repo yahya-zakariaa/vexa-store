@@ -42,10 +42,10 @@ export default function ProductCarousel({ title, link, params, preView }) {
 
   return (
     <>
-      <section className="w-full py-5">
-        <div className="container new-arrive w-[90%] mx-auto">
+      <section className="w-full ">
+        <div className="container new-arrive w-full mx-auto">
           <div className="header flex items-center justify-between mb-5 w-full">
-            <h2 className="dark:text-white text-black font-bold text-[32px]">
+            <h2 className="dark:text-white text-black font-bold md:text-[32px] text-[24px] tracking-wider">
               {title}
             </h2>
             <Link
@@ -76,18 +76,18 @@ export default function ProductCarousel({ title, link, params, preView }) {
               something went happend try again later
             </div>
           ) : isLoading ? (
-            <div className="w-full h-full grid grid-cols-4 gap-[30px]">
-              <Skeleton className="h-[400px] rounded-lg" />
-              <Skeleton className="h-[400px] rounded-lg" />
-              <Skeleton className="h-[400px] rounded-lg" />
-              <Skeleton className="h-[400px] rounded-lg" />
+            <div className="aspict-[4/5] grid grid-cols-4 gap-[30px]">
+              <Skeleton className="w-full h-full rounded-lg" />
+              <Skeleton className="w-full h-full rounded-lg" />
+              <Skeleton className="w-full h-full rounded-lg" />
+              <Skeleton className="w-full h-full rounded-lg" />
             </div>
           ) : products?.length > 0 ? (
-            <div className="w-full h-full relative">
-              <div className="w-full h-full relative">
+            <div className="w-full h-fit relative">
+              <div className="w-full h-fit relative px-3">
                 <button
                   ref={prevRef}
-                  className="custom-prev absolute left-[-50px] text-black dark:text-white top-1/2 -translate-y-1/2 z-10"
+                  className="custom-prev absolute -left-4 text-black dark:text-white top-[30%] -translate-y-1/2 z-10"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -107,7 +107,7 @@ export default function ProductCarousel({ title, link, params, preView }) {
                 </button>
                 <button
                   ref={nextRef}
-                  className="custom-next absolute right-[-50px] text-black dark:text-white top-1/2 -translate-y-1/2 z-10"
+                  className="custom-next absolute -right-4 text-black dark:text-white top-[30%] -translate-y-1/2 z-10"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -137,13 +137,25 @@ export default function ProductCarousel({ title, link, params, preView }) {
                     nextEl: nextRef.current,
                   }}
                   onSwiper={setSwiperInstance}
-                  className="w-full h-full pb-20"
+                  breakpoints={{
+                    220: {
+                      slidesPerView: 2,
+                    },
+                    750: {
+                      slidesPerView: 3,
+                    },
+
+                    1024: {
+                      slidesPerView: 4,
+                    },
+                  }}
+                  className="w-full  "
                 >
                   {products.map((product, i) => (
-                    <SwiperSlide key={i}>
+                    <SwiperSlide key={i} className="overflow-hidden">
                       <Link
                         href={`collections/${params.collection}/${product._id}`}
-                        className="product relative group cursor-pointer"
+                        className="product relative group cursor-pointer h-[200px]"
                       >
                         {product.onSale && (
                           <span className="absolute top-1.5 left-1.5 bg-[#111]  text-center px-5 py-1 text-[14px] tracking-widest font-medium rounded-md z-20 text-white">

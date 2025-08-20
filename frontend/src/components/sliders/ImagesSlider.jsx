@@ -70,7 +70,7 @@ export default function ImagesSlider({
       >
         {imgs.map((img, index) => (
           <SwiperSlide key={index}>
-            <div className="w-full h-full relative">
+            <div className=" relative aspect-[4/5]">
               {!loadedImages[index] && (
                 <Skeleton className="absolute inset-0 w-full h-[400px] rounded-lg" />
               )}
@@ -78,7 +78,7 @@ export default function ImagesSlider({
                 alt={`Image ${index + 1}`}
                 width={200}
                 height={400}
-                className={`w-full h-full rounded-lg object-cover transition-opacity duration-300 ${
+                className={`  w-full h-full rounded-lg object-cover transition-opacity duration-300 ${
                   loadedImages[index] ? "opacity-100" : "opacity-0"
                 }`}
                 src={img}
